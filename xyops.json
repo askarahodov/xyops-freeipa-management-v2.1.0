@@ -1,6 +1,6 @@
 {
   "type": "xypdf",
-  "description": "xyOps Portable Data Object",
+  "description": "xyOps Portable Data - FreeIPA Management self-distributed plugin",
   "version": "1.0",
   "items": [
     {
@@ -10,7 +10,7 @@
         "title": "FreeIPA Management",
         "enabled": true,
         "type": "event",
-        "command": "npx -y github:askarahodov/xyOps-FreeIPA-Management#v2.1.0",
+        "command": "npx -y github:YOUR_GITHUB/xyOps-FreeIPA-Management#v2.1.1",
         "script": "",
         "groups": [],
         "format": "",
@@ -446,10 +446,6 @@
         ],
         "notes": "Assign Secret Vault variables IPA_USERNAME and IPA_PASSWORD. The FreeIPA service account should have only the delegated permissions required by the enabled operations.",
         "icon": "users-cog",
-        "marketplace": {
-          "id": "askarahodov/xyOps-FreeIPA-Management",
-          "version": "v2.1.0"
-        },
         "uid": "",
         "gid": ""
       }
