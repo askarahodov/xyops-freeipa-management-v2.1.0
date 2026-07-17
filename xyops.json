@@ -1,31 +1,31 @@
 {
   "type": "xypdf",
-  "description": "xyOps Portable Data - FreeIPA Management self-distributed plugin",
+  "description": "xyOps Portable Data - самораспространяемый плагин управления FreeIPA",
   "version": "1.0",
   "items": [
     {
       "type": "plugin",
       "data": {
         "id": "pmlc2ha8fipa1",
-        "title": "FreeIPA Management",
+        "title": "Управление FreeIPA",
         "enabled": true,
         "type": "event",
-        "command": "npx -y github:YOUR_GITHUB/xyOps-FreeIPA-Management#v2.1.1",
+        "command": "npx -y github:askarahodov/xyOps-FreeIPA-Management#v2.1.1",
         "script": "",
         "groups": [],
         "format": "",
         "params": [
           {
             "id": "connection_group",
-            "title": "FreeIPA connection",
+            "title": "Подключение к FreeIPA",
             "type": "group",
-            "caption": "Credentials must be assigned from the xyOps Secret Vault as `IPA_USERNAME` and `IPA_PASSWORD`."
+            "caption": "Учётные данные должны быть назначены из Секретного хранилища xyOps (Secret Vault) как `IPA_USERNAME` и `IPA_PASSWORD`."
           },
           {
             "id": "ipa_url",
-            "title": "FreeIPA URL",
+            "title": "URL FreeIPA",
             "type": "text",
-            "caption": "For example https://ipa.example.local. The plugin adds /ipa automatically.",
+            "caption": "Например https://ipa.example.local. Плагин автоматически добавляет /ipa.",
             "locked": false,
             "value": "https://ipa.example.local",
             "variant": "url",
@@ -33,9 +33,9 @@
           },
           {
             "id": "ca_cert_path",
-            "title": "FreeIPA CA certificate",
+            "title": "Сертификат CA FreeIPA",
             "type": "text",
-            "caption": "Path on the xyOps worker, usually /etc/ipa/ca.crt. Leave empty when the CA is trusted by the operating system.",
+            "caption": "Путь на рабочем узле xyOps, обычно /etc/ipa/ca.crt. Оставьте пустым, если CA доверен операционной системой.",
             "locked": false,
             "value": "/etc/ipa/ca.crt",
             "variant": "text",
@@ -43,9 +43,9 @@
           },
           {
             "id": "timeout_seconds",
-            "title": "Request timeout",
+            "title": "Тайм-аут запроса",
             "type": "text",
-            "caption": "HTTPS request timeout in seconds.",
+            "caption": "Тайм-аут HTTPS-запроса в секундах.",
             "locked": false,
             "value": 30,
             "variant": "number",
@@ -54,24 +54,24 @@
           },
           {
             "id": "insecure_tls",
-            "title": "Disable TLS verification",
+            "title": "Отключить проверку TLS",
             "type": "checkbox",
-            "caption": "Testing only. Do not enable in production.",
+            "caption": "Только для тестирования. Не включайте в производственной среде.",
             "locked": false,
             "value": false
           },
           {
             "id": "freeipa_tool",
-            "title": "FreeIPA operation",
+            "title": "Операция FreeIPA",
             "type": "toolset",
-            "caption": "Select an operation. Only fields required for that operation are displayed.",
+            "caption": "Выберите операцию. Отображаются только поля, необходимые для этой операции.",
             "data": {
               "default": "listUsers",
               "tools": [
                 {
                   "id": "listUsers",
-                  "title": "List users",
-                  "description": "Search and display active, disabled and optionally preserved users.",
+                  "title": "Список пользователей",
+                  "description": "Поиск и отображение активных, отключённых и при необходимости сохранённых пользователей.",
                   "fields": [
                     {
                       "id": "action",
@@ -81,21 +81,21 @@
                     },
                     {
                       "id": "search_criteria",
-                      "title": "Search",
+                      "title": "Поиск",
                       "type": "text",
                       "value": "",
-                      "caption": "Optional login, name, email or other FreeIPA search criterion."
+                      "caption": "Необязательный логин, имя, email или иной критерий поиска FreeIPA."
                     },
                     {
                       "id": "user_group_filter",
-                      "title": "Only users in group",
+                      "title": "Только пользователи группы",
                       "type": "text",
                       "value": "",
-                      "caption": "Optional exact FreeIPA group name."
+                      "caption": "Необязательное точное название группы FreeIPA."
                     },
                     {
                       "id": "list_limit",
-                      "title": "List limit",
+                      "title": "Лимит списка",
                       "type": "text",
                       "variant": "number",
                       "value": 200,
@@ -104,17 +104,17 @@
                     },
                     {
                       "id": "include_preserved",
-                      "title": "Include preserved users",
+                      "title": "Включить сохранённых пользователей",
                       "type": "checkbox",
                       "value": false,
-                      "caption": "Also query users preserved by user deletion."
+                      "caption": "Также выполнять запрос по пользователям, сохранённым при удалении."
                     }
                   ]
                 },
                 {
                   "id": "showUser",
-                  "title": "Show user",
-                  "description": "Get information about one FreeIPA user.",
+                  "title": "Показать пользователя",
+                  "description": "Получить информацию об одном пользователе FreeIPA.",
                   "fields": [
                     {
                       "id": "action",
@@ -124,7 +124,7 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Login",
+                      "title": "Логин",
                       "type": "text",
                       "value": "",
                       "required": true
@@ -133,8 +133,8 @@
                 },
                 {
                   "id": "createUser",
-                  "title": "Create user",
-                  "description": "Create a FreeIPA user and optionally add it to groups.",
+                  "title": "Создать пользователя",
+                  "description": "Создать пользователя FreeIPA и при необходимости добавить его в группы.",
                   "fields": [
                     {
                       "id": "action",
@@ -144,32 +144,32 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Login",
+                      "title": "Логин",
                       "type": "text",
                       "value": "",
                       "required": true,
-                      "caption": "For example ivanov."
+                      "caption": "Например ivanov."
                     },
                     {
                       "id": "givenname",
-                      "title": "First name",
+                      "title": "Имя",
                       "type": "text",
                       "value": "",
                       "required": true
                     },
                     {
                       "id": "sn",
-                      "title": "Last name",
+                      "title": "Фамилия",
                       "type": "text",
                       "value": "",
                       "required": true
                     },
                     {
                       "id": "cn",
-                      "title": "Full name",
+                      "title": "Полное имя",
                       "type": "text",
                       "value": "",
-                      "caption": "Optional. Defaults to First name + Last name."
+                      "caption": "Необязательно. По умолчанию Имя + Фамилия."
                     },
                     {
                       "id": "mail",
@@ -180,62 +180,62 @@
                     },
                     {
                       "id": "initial_password",
-                      "title": "Initial password",
+                      "title": "Начальный пароль",
                       "type": "text",
                       "value": "",
-                      "caption": "Optional initial password. xyOps masks this field in the UI, but use strict access controls and short retention for job metadata.",
+                      "caption": "Необязательный начальный пароль. xyOps скрывает это поле в интерфейсе, но используйте строгий контроль доступа и короткий срок хранения метаданных задания.",
                       "variant": "password"
                     },
                     {
                       "id": "groups",
-                      "title": "Groups",
+                      "title": "Группы",
                       "type": "textarea",
                       "value": "",
-                      "caption": "Optional group names separated by commas, semicolons or new lines."
+                      "caption": "Необязательные названия групп, разделённые запятыми, точками с запятой или переводами строк."
                     },
                     {
                       "id": "login_shell",
-                      "title": "Login shell",
+                      "title": "Оболочка входа",
                       "type": "text",
                       "value": "",
-                      "caption": "For example /bin/bash."
+                      "caption": "Например /bin/bash."
                     },
                     {
                       "id": "home_directory",
-                      "title": "Home directory",
+                      "title": "Домашний каталог",
                       "type": "text",
                       "value": "",
-                      "caption": "For example /home/ivanov."
+                      "caption": "Например /home/ivanov."
                     },
                     {
                       "id": "telephonenumber",
-                      "title": "Telephone",
+                      "title": "Телефон",
                       "type": "text",
                       "variant": "tel",
                       "value": ""
                     },
                     {
                       "id": "mobile",
-                      "title": "Mobile",
+                      "title": "Мобильный",
                       "type": "text",
                       "variant": "tel",
                       "value": ""
                     },
                     {
                       "id": "job_title",
-                      "title": "Job title",
+                      "title": "Должность",
                       "type": "text",
                       "value": ""
                     },
                     {
                       "id": "department_number",
-                      "title": "Department number",
+                      "title": "Номер отдела",
                       "type": "text",
                       "value": ""
                     },
                     {
                       "id": "employee_number",
-                      "title": "Employee number",
+                      "title": "Табельный номер",
                       "type": "text",
                       "value": ""
                     }
@@ -243,8 +243,8 @@
                 },
                 {
                   "id": "deleteUser",
-                  "title": "Delete user",
-                  "description": "Delete a user. Preserving the entry is enabled by default.",
+                  "title": "Удалить пользователя",
+                  "description": "Удалить пользователя. По умолчанию включено сохранение записи.",
                   "fields": [
                     {
                       "id": "action",
@@ -254,31 +254,31 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Login",
+                      "title": "Логин",
                       "type": "text",
                       "value": "",
                       "required": true
                     },
                     {
                       "id": "preserve_user",
-                      "title": "Preserve deleted user",
+                      "title": "Сохранить удалённого пользователя",
                       "type": "checkbox",
                       "value": true,
-                      "caption": "Preserved users can be restored later. Disable this only for permanent deletion."
+                      "caption": "Сохранённых пользователей можно восстановить позже. Отключайте только для окончательного удаления."
                     },
                     {
                       "id": "confirm_destructive",
-                      "title": "Confirm deletion",
+                      "title": "Подтвердить удаление",
                       "type": "checkbox",
                       "value": false,
-                      "caption": "Required. The job fails without this confirmation."
+                      "caption": "Обязательно. Без этого подтверждения задание завершится с ошибкой."
                     }
                   ]
                 },
                 {
                   "id": "restoreUser",
-                  "title": "Restore preserved user",
-                  "description": "Restore a user deleted with preservation enabled.",
+                  "title": "Восстановить сохранённого пользователя",
+                  "description": "Восстановить пользователя, удалённого с включённым сохранением.",
                   "fields": [
                     {
                       "id": "action",
@@ -288,7 +288,7 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Login",
+                      "title": "Логин",
                       "type": "text",
                       "value": "",
                       "required": true
@@ -297,8 +297,8 @@
                 },
                 {
                   "id": "disableUser",
-                  "title": "Disable user",
-                  "description": "Administratively disable a user account.",
+                  "title": "Отключить пользователя",
+                  "description": "Административно отключить учётную запись пользователя.",
                   "fields": [
                     {
                       "id": "action",
@@ -308,7 +308,7 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Login",
+                      "title": "Логин",
                       "type": "text",
                       "value": "",
                       "required": true
@@ -317,8 +317,8 @@
                 },
                 {
                   "id": "enableUser",
-                  "title": "Enable user",
-                  "description": "Enable a previously disabled user account.",
+                  "title": "Включить пользователя",
+                  "description": "Включить ранее отключенную учётную запись пользователя.",
                   "fields": [
                     {
                       "id": "action",
@@ -328,7 +328,7 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Login",
+                      "title": "Логин",
                       "type": "text",
                       "value": "",
                       "required": true
@@ -337,8 +337,8 @@
                 },
                 {
                   "id": "unlockUser",
-                  "title": "Unlock user",
-                  "description": "Clear a temporary password-policy lockout after failed login attempts.",
+                  "title": "Разблокировать пользователя",
+                  "description": "Снять временную блокировку по политике паролей после неудачных попыток входа.",
                   "fields": [
                     {
                       "id": "action",
@@ -348,7 +348,7 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Login",
+                      "title": "Логин",
                       "type": "text",
                       "value": "",
                       "required": true
@@ -357,8 +357,8 @@
                 },
                 {
                   "id": "listGroups",
-                  "title": "List groups",
-                  "description": "Search and display FreeIPA groups and member counts.",
+                  "title": "Список групп",
+                  "description": "Поиск и отображение групп FreeIPA и количества участников.",
                   "fields": [
                     {
                       "id": "action",
@@ -368,14 +368,14 @@
                     },
                     {
                       "id": "search_criteria",
-                      "title": "Search",
+                      "title": "Поиск",
                       "type": "text",
                       "value": "",
-                      "caption": "Optional group name or description search criterion."
+                      "caption": "Необязательный критерий поиска по названию или описанию группы."
                     },
                     {
                       "id": "list_limit",
-                      "title": "List limit",
+                      "title": "Лимит списка",
                       "type": "text",
                       "variant": "number",
                       "value": 200,
@@ -386,8 +386,8 @@
                 },
                 {
                   "id": "addUserToGroups",
-                  "title": "Add user to groups",
-                  "description": "Add one user to one or more existing FreeIPA groups.",
+                  "title": "Добавить пользователя в группы",
+                  "description": "Добавить одного пользователя в одну или несколько существующих групп FreeIPA.",
                   "fields": [
                     {
                       "id": "action",
@@ -397,25 +397,25 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Login",
+                      "title": "Логин",
                       "type": "text",
                       "value": "",
                       "required": true
                     },
                     {
                       "id": "groups",
-                      "title": "Groups",
+                      "title": "Группы",
                       "type": "textarea",
                       "value": "",
                       "required": true,
-                      "caption": "Group names separated by commas, semicolons or new lines."
+                      "caption": "Названия групп, разделённые запятыми, точками с запятой или переводами строк."
                     }
                   ]
                 },
                 {
                   "id": "removeUserFromGroups",
-                  "title": "Remove user from groups",
-                  "description": "Remove one user from one or more FreeIPA groups.",
+                  "title": "Удалить пользователя из групп",
+                  "description": "Удалить одного пользователя из одной или нескольких групп FreeIPA.",
                   "fields": [
                     {
                       "id": "action",
@@ -425,18 +425,18 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Login",
+                      "title": "Логин",
                       "type": "text",
                       "value": "",
                       "required": true
                     },
                     {
                       "id": "groups",
-                      "title": "Groups",
+                      "title": "Группы",
                       "type": "textarea",
                       "value": "",
                       "required": true,
-                      "caption": "Group names separated by commas, semicolons or new lines."
+                      "caption": "Названия групп, разделённые запятыми, точками с запятой или переводами строк."
                     }
                   ]
                 }
@@ -444,7 +444,7 @@
             }
           }
         ],
-        "notes": "Assign Secret Vault variables IPA_USERNAME and IPA_PASSWORD. The FreeIPA service account should have only the delegated permissions required by the enabled operations.",
+        "notes": "Назначьте переменные Секретного хранилища IPA_USERNAME и IPA_PASSWORD. У сервисной учётной записи FreeIPA должны быть только делегированные права, необходимые для включённых операций.",
         "icon": "users-cog",
         "uid": "",
         "gid": ""
