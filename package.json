@@ -1,0 +1,18 @@
+{
+  "name": "xyops-freeipa-management",
+  "version": "2.1.0",
+  "private": true,
+  "description": "xyOps Event Plugin for FreeIPA user and group management through JSON-RPC",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "xyops-freeipa-management": "index.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

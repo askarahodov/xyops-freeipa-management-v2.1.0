@@ -1,0 +1,459 @@
+{
+  "type": "xypdf",
+  "description": "xyOps Portable Data Object",
+  "version": "1.0",
+  "items": [
+    {
+      "type": "plugin",
+      "data": {
+        "id": "pmlc2ha8fipa1",
+        "title": "FreeIPA Management",
+        "enabled": true,
+        "type": "event",
+        "command": "npx -y github:askarahodov/xyOps-FreeIPA-Management#v2.1.0",
+        "script": "",
+        "groups": [],
+        "format": "",
+        "params": [
+          {
+            "id": "connection_group",
+            "title": "FreeIPA connection",
+            "type": "group",
+            "caption": "Credentials must be assigned from the xyOps Secret Vault as `IPA_USERNAME` and `IPA_PASSWORD`."
+          },
+          {
+            "id": "ipa_url",
+            "title": "FreeIPA URL",
+            "type": "text",
+            "caption": "For example https://ipa.example.local. The plugin adds /ipa automatically.",
+            "locked": false,
+            "value": "https://ipa.example.local",
+            "variant": "url",
+            "required": true
+          },
+          {
+            "id": "ca_cert_path",
+            "title": "FreeIPA CA certificate",
+            "type": "text",
+            "caption": "Path on the xyOps worker, usually /etc/ipa/ca.crt. Leave empty when the CA is trusted by the operating system.",
+            "locked": false,
+            "value": "/etc/ipa/ca.crt",
+            "variant": "text",
+            "required": false
+          },
+          {
+            "id": "timeout_seconds",
+            "title": "Request timeout",
+            "type": "text",
+            "caption": "HTTPS request timeout in seconds.",
+            "locked": false,
+            "value": 30,
+            "variant": "number",
+            "range": "1 - 300 / 1",
+            "required": true
+          },
+          {
+            "id": "insecure_tls",
+            "title": "Disable TLS verification",
+            "type": "checkbox",
+            "caption": "Testing only. Do not enable in production.",
+            "locked": false,
+            "value": false
+          },
+          {
+            "id": "freeipa_tool",
+            "title": "FreeIPA operation",
+            "type": "toolset",
+            "caption": "Select an operation. Only fields required for that operation are displayed.",
+            "data": {
+              "default": "listUsers",
+              "tools": [
+                {
+                  "id": "listUsers",
+                  "title": "List users",
+                  "description": "Search and display active, disabled and optionally preserved users.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "list_users"
+                    },
+                    {
+                      "id": "search_criteria",
+                      "title": "Search",
+                      "type": "text",
+                      "value": "",
+                      "caption": "Optional login, name, email or other FreeIPA search criterion."
+                    },
+                    {
+                      "id": "user_group_filter",
+                      "title": "Only users in group",
+                      "type": "text",
+                      "value": "",
+                      "caption": "Optional exact FreeIPA group name."
+                    },
+                    {
+                      "id": "list_limit",
+                      "title": "List limit",
+                      "type": "text",
+                      "variant": "number",
+                      "value": 200,
+                      "range": "1 - 10000 / 1",
+                      "required": true
+                    },
+                    {
+                      "id": "include_preserved",
+                      "title": "Include preserved users",
+                      "type": "checkbox",
+                      "value": false,
+                      "caption": "Also query users preserved by user deletion."
+                    }
+                  ]
+                },
+                {
+                  "id": "showUser",
+                  "title": "Show user",
+                  "description": "Get information about one FreeIPA user.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "show_user"
+                    },
+                    {
+                      "id": "uid",
+                      "title": "Login",
+                      "type": "text",
+                      "value": "",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "createUser",
+                  "title": "Create user",
+                  "description": "Create a FreeIPA user and optionally add it to groups.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "create_user"
+                    },
+                    {
+                      "id": "uid",
+                      "title": "Login",
+                      "type": "text",
+                      "value": "",
+                      "required": true,
+                      "caption": "For example ivanov."
+                    },
+                    {
+                      "id": "givenname",
+                      "title": "First name",
+                      "type": "text",
+                      "value": "",
+                      "required": true
+                    },
+                    {
+                      "id": "sn",
+                      "title": "Last name",
+                      "type": "text",
+                      "value": "",
+                      "required": true
+                    },
+                    {
+                      "id": "cn",
+                      "title": "Full name",
+                      "type": "text",
+                      "value": "",
+                      "caption": "Optional. Defaults to First name + Last name."
+                    },
+                    {
+                      "id": "mail",
+                      "title": "Email",
+                      "type": "text",
+                      "variant": "email",
+                      "value": ""
+                    },
+                    {
+                      "id": "initial_password",
+                      "title": "Initial password",
+                      "type": "text",
+                      "value": "",
+                      "caption": "Optional initial password. xyOps masks this field in the UI, but use strict access controls and short retention for job metadata.",
+                      "variant": "password"
+                    },
+                    {
+                      "id": "groups",
+                      "title": "Groups",
+                      "type": "textarea",
+                      "value": "",
+                      "caption": "Optional group names separated by commas, semicolons or new lines."
+                    },
+                    {
+                      "id": "login_shell",
+                      "title": "Login shell",
+                      "type": "text",
+                      "value": "",
+                      "caption": "For example /bin/bash."
+                    },
+                    {
+                      "id": "home_directory",
+                      "title": "Home directory",
+                      "type": "text",
+                      "value": "",
+                      "caption": "For example /home/ivanov."
+                    },
+                    {
+                      "id": "telephonenumber",
+                      "title": "Telephone",
+                      "type": "text",
+                      "variant": "tel",
+                      "value": ""
+                    },
+                    {
+                      "id": "mobile",
+                      "title": "Mobile",
+                      "type": "text",
+                      "variant": "tel",
+                      "value": ""
+                    },
+                    {
+                      "id": "job_title",
+                      "title": "Job title",
+                      "type": "text",
+                      "value": ""
+                    },
+                    {
+                      "id": "department_number",
+                      "title": "Department number",
+                      "type": "text",
+                      "value": ""
+                    },
+                    {
+                      "id": "employee_number",
+                      "title": "Employee number",
+                      "type": "text",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "id": "deleteUser",
+                  "title": "Delete user",
+                  "description": "Delete a user. Preserving the entry is enabled by default.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "delete_user"
+                    },
+                    {
+                      "id": "uid",
+                      "title": "Login",
+                      "type": "text",
+                      "value": "",
+                      "required": true
+                    },
+                    {
+                      "id": "preserve_user",
+                      "title": "Preserve deleted user",
+                      "type": "checkbox",
+                      "value": true,
+                      "caption": "Preserved users can be restored later. Disable this only for permanent deletion."
+                    },
+                    {
+                      "id": "confirm_destructive",
+                      "title": "Confirm deletion",
+                      "type": "checkbox",
+                      "value": false,
+                      "caption": "Required. The job fails without this confirmation."
+                    }
+                  ]
+                },
+                {
+                  "id": "restoreUser",
+                  "title": "Restore preserved user",
+                  "description": "Restore a user deleted with preservation enabled.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "restore_user"
+                    },
+                    {
+                      "id": "uid",
+                      "title": "Login",
+                      "type": "text",
+                      "value": "",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "disableUser",
+                  "title": "Disable user",
+                  "description": "Administratively disable a user account.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "disable_user"
+                    },
+                    {
+                      "id": "uid",
+                      "title": "Login",
+                      "type": "text",
+                      "value": "",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "enableUser",
+                  "title": "Enable user",
+                  "description": "Enable a previously disabled user account.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "enable_user"
+                    },
+                    {
+                      "id": "uid",
+                      "title": "Login",
+                      "type": "text",
+                      "value": "",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "unlockUser",
+                  "title": "Unlock user",
+                  "description": "Clear a temporary password-policy lockout after failed login attempts.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "unlock_user"
+                    },
+                    {
+                      "id": "uid",
+                      "title": "Login",
+                      "type": "text",
+                      "value": "",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "listGroups",
+                  "title": "List groups",
+                  "description": "Search and display FreeIPA groups and member counts.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "list_groups"
+                    },
+                    {
+                      "id": "search_criteria",
+                      "title": "Search",
+                      "type": "text",
+                      "value": "",
+                      "caption": "Optional group name or description search criterion."
+                    },
+                    {
+                      "id": "list_limit",
+                      "title": "List limit",
+                      "type": "text",
+                      "variant": "number",
+                      "value": 200,
+                      "range": "1 - 10000 / 1",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "addUserToGroups",
+                  "title": "Add user to groups",
+                  "description": "Add one user to one or more existing FreeIPA groups.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "add_user_to_groups"
+                    },
+                    {
+                      "id": "uid",
+                      "title": "Login",
+                      "type": "text",
+                      "value": "",
+                      "required": true
+                    },
+                    {
+                      "id": "groups",
+                      "title": "Groups",
+                      "type": "textarea",
+                      "value": "",
+                      "required": true,
+                      "caption": "Group names separated by commas, semicolons or new lines."
+                    }
+                  ]
+                },
+                {
+                  "id": "removeUserFromGroups",
+                  "title": "Remove user from groups",
+                  "description": "Remove one user from one or more FreeIPA groups.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "remove_user_from_groups"
+                    },
+                    {
+                      "id": "uid",
+                      "title": "Login",
+                      "type": "text",
+                      "value": "",
+                      "required": true
+                    },
+                    {
+                      "id": "groups",
+                      "title": "Groups",
+                      "type": "textarea",
+                      "value": "",
+                      "required": true,
+                      "caption": "Group names separated by commas, semicolons or new lines."
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "notes": "Assign Secret Vault variables IPA_USERNAME and IPA_PASSWORD. The FreeIPA service account should have only the delegated permissions required by the enabled operations.",
+        "icon": "users-cog",
+        "marketplace": {
+          "id": "askarahodov/xyOps-FreeIPA-Management",
+          "version": "v2.1.0"
+        },
+        "uid": "",
+        "gid": ""
+      }
+    }
+  ],
+  "xyops": "1.0.83"
+}
