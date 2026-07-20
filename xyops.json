@@ -1,8 +1,19 @@
 {
   "type": "xypdf",
-  "description": "xyOps Portable Data - самораспространяемый плагин управления FreeIPA",
+  "description": "xyOps Portable Data — плагин управления FreeIPA с динамическим выбором пользователей и групп",
   "version": "1.0",
+  "xyops": "1.0.83",
   "items": [
+    {
+      "type": "bucket",
+      "data": {
+        "id": "bfreeipacache",
+        "title": "Кэш каталога FreeIPA",
+        "enabled": true,
+        "icon": "database-sync",
+        "notes": "Содержит синхронизированные списки пользователей и групп для Bucket Menu плагина FreeIPA. Данные заполняются операцией sync_directory_cache и действием Store Bucket."
+      }
+    },
     {
       "type": "plugin",
       "data": {
@@ -10,7 +21,7 @@
         "title": "Управление FreeIPA",
         "enabled": true,
         "type": "event",
-        "command": "npx -y github:askarahodov/xyOps-FreeIPA-Management#v2.1.1",
+        "command": "npx -y github:askarahodov/xyops-freeipa-management-v2.1.0#main",
         "script": "",
         "groups": [],
         "format": "",
@@ -19,7 +30,7 @@
             "id": "connection_group",
             "title": "Подключение к FreeIPA",
             "type": "group",
-            "caption": "Учётные данные должны быть назначены из Секретного хранилища xyOps (Secret Vault) как `IPA_USERNAME` и `IPA_PASSWORD`."
+            "caption": "Учётные данные должны быть назначены из Секретного хранилища xyOps как IPA_USERNAME и IPA_PASSWORD. Перед использованием меню выполните синхронизацию каталога."
           },
           {
             "id": "ipa_url",
@@ -89,9 +100,12 @@
                     {
                       "id": "user_group_filter",
                       "title": "Только пользователи группы",
-                      "type": "text",
-                      "value": "",
-                      "caption": "Необязательное точное название группы FreeIPA."
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "groups",
+                      "caption": "Необязательно. Выберите точное название группы FreeIPA.",
+                      "multiple": false,
+                      "required": false
                     },
                     {
                       "id": "list_limit",
@@ -124,9 +138,12 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Логин",
-                      "type": "text",
-                      "value": "",
+                      "title": "Пользователь",
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "users",
+                      "caption": "Выберите пользователя FreeIPA из синхронизированного каталога.",
+                      "multiple": false,
                       "required": true
                     }
                   ]
@@ -134,7 +151,7 @@
                 {
                   "id": "createUser",
                   "title": "Создать пользователя",
-                  "description": "Создать пользователя FreeIPA и при необходимости добавить его в группы.",
+                  "description": "Создать пользователя FreeIPA и при необходимости добавить его в выбранные группы.",
                   "fields": [
                     {
                       "id": "action",
@@ -189,9 +206,12 @@
                     {
                       "id": "groups",
                       "title": "Группы",
-                      "type": "textarea",
-                      "value": "",
-                      "caption": "Необязательные названия групп, разделённые запятыми, точками с запятой или переводами строк."
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "groups",
+                      "caption": "Выберите одну или несколько групп из синхронизированного каталога FreeIPA.",
+                      "multiple": true,
+                      "required": false
                     },
                     {
                       "id": "login_shell",
@@ -244,7 +264,7 @@
                 {
                   "id": "deleteUser",
                   "title": "Удалить пользователя",
-                  "description": "Удалить пользователя. По умолчанию включено сохранение записи.",
+                  "description": "Удалить выбранного пользователя. По умолчанию включено сохранение записи.",
                   "fields": [
                     {
                       "id": "action",
@@ -254,9 +274,12 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Логин",
-                      "type": "text",
-                      "value": "",
+                      "title": "Пользователь",
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "users",
+                      "caption": "Выберите пользователя FreeIPA из синхронизированного каталога.",
+                      "multiple": false,
                       "required": true
                     },
                     {
@@ -288,9 +311,12 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Логин",
-                      "type": "text",
-                      "value": "",
+                      "title": "Сохранённый пользователь",
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "preserved_users",
+                      "caption": "Выберите сохранённого пользователя FreeIPA для восстановления.",
+                      "multiple": false,
                       "required": true
                     }
                   ]
@@ -298,7 +324,7 @@
                 {
                   "id": "disableUser",
                   "title": "Отключить пользователя",
-                  "description": "Административно отключить учётную запись пользователя.",
+                  "description": "Административно отключить активную учётную запись пользователя.",
                   "fields": [
                     {
                       "id": "action",
@@ -308,9 +334,12 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Логин",
-                      "type": "text",
-                      "value": "",
+                      "title": "Активный пользователь",
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "enabled_users",
+                      "caption": "Выберите активного пользователя FreeIPA для отключения.",
+                      "multiple": false,
                       "required": true
                     }
                   ]
@@ -318,7 +347,7 @@
                 {
                   "id": "enableUser",
                   "title": "Включить пользователя",
-                  "description": "Включить ранее отключенную учётную запись пользователя.",
+                  "description": "Включить ранее отключённую учётную запись пользователя.",
                   "fields": [
                     {
                       "id": "action",
@@ -328,9 +357,12 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Логин",
-                      "type": "text",
-                      "value": "",
+                      "title": "Отключённый пользователь",
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "disabled_users",
+                      "caption": "Выберите отключённого пользователя FreeIPA для включения.",
+                      "multiple": false,
                       "required": true
                     }
                   ]
@@ -348,9 +380,12 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Логин",
-                      "type": "text",
-                      "value": "",
+                      "title": "Пользователь",
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "users",
+                      "caption": "Выберите пользователя FreeIPA из синхронизированного каталога.",
+                      "multiple": false,
                       "required": true
                     }
                   ]
@@ -385,9 +420,32 @@
                   ]
                 },
                 {
+                  "id": "syncDirectoryCache",
+                  "title": "Синхронизировать меню пользователей и групп",
+                  "description": "Получить пользователей и группы FreeIPA для динамических Bucket Menu. Результат необходимо сохранить действием On Success → Store Bucket в bucket bfreeipacache.",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "sync_directory_cache"
+                    },
+                    {
+                      "id": "list_limit",
+                      "title": "Лимит объектов",
+                      "type": "text",
+                      "variant": "number",
+                      "value": 10000,
+                      "range": "1 - 10000 / 1",
+                      "required": true,
+                      "caption": "Максимальное число пользователей, сохранённых пользователей и групп в каждом запросе."
+                    }
+                  ]
+                },
+                {
                   "id": "addUserToGroups",
                   "title": "Добавить пользователя в группы",
-                  "description": "Добавить одного пользователя в одну или несколько существующих групп FreeIPA.",
+                  "description": "Добавить выбранного пользователя в одну или несколько существующих групп FreeIPA.",
                   "fields": [
                     {
                       "id": "action",
@@ -397,25 +455,30 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Логин",
-                      "type": "text",
-                      "value": "",
+                      "title": "Пользователь",
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "users",
+                      "caption": "Выберите пользователя FreeIPA из синхронизированного каталога.",
+                      "multiple": false,
                       "required": true
                     },
                     {
                       "id": "groups",
                       "title": "Группы",
-                      "type": "textarea",
-                      "value": "",
-                      "required": true,
-                      "caption": "Названия групп, разделённые запятыми, точками с запятой или переводами строк."
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "groups",
+                      "caption": "Выберите одну или несколько групп из синхронизированного каталога FreeIPA.",
+                      "multiple": true,
+                      "required": true
                     }
                   ]
                 },
                 {
                   "id": "removeUserFromGroups",
                   "title": "Удалить пользователя из групп",
-                  "description": "Удалить одного пользователя из одной или нескольких групп FreeIPA.",
+                  "description": "Удалить выбранного пользователя из одной или нескольких групп FreeIPA.",
                   "fields": [
                     {
                       "id": "action",
@@ -425,18 +488,23 @@
                     },
                     {
                       "id": "uid",
-                      "title": "Логин",
-                      "type": "text",
-                      "value": "",
+                      "title": "Пользователь",
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "users",
+                      "caption": "Выберите пользователя FreeIPA из синхронизированного каталога.",
+                      "multiple": false,
                       "required": true
                     },
                     {
                       "id": "groups",
                       "title": "Группы",
-                      "type": "textarea",
-                      "value": "",
-                      "required": true,
-                      "caption": "Названия групп, разделённые запятыми, точками с запятой или переводами строк."
+                      "type": "bucket",
+                      "bucket_id": "bfreeipacache",
+                      "bucket_path": "groups",
+                      "caption": "Выберите группы, из которых нужно удалить пользователя. Плагин проверит операцию в FreeIPA.",
+                      "multiple": true,
+                      "required": true
                     }
                   ]
                 }
@@ -444,12 +512,13 @@
             }
           }
         ],
-        "notes": "Назначьте переменные Секретного хранилища IPA_USERNAME и IPA_PASSWORD. У сервисной учётной записи FreeIPA должны быть только делегированные права, необходимые для включённых операций.",
+        "notes": "Назначьте IPA_USERNAME и IPA_PASSWORD. Для динамических меню импортируется bucket bfreeipacache: заполните его операцией «Синхронизировать меню пользователей и групп» и действием Store Bucket. После изменений пользователей или групп повторите синхронизацию.",
         "icon": "users-cog",
         "uid": "",
-        "gid": ""
+        "gid": "",
+        "kill": "parent",
+        "runner": false
       }
     }
-  ],
-  "xyops": "1.0.83"
+  ]
 }

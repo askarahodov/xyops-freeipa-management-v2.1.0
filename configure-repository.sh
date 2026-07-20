@@ -1,18 +1,37 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-OWNER="${1:-}"
-if [[ -z "$OWNER" ]]; then
-  echo "Usage: $0 <github-owner-or-organization>" >&2
-  exit 1
-fi
+OWNER="${1:-askarahodov}"
+REPOSITORY="${2:-xyops-freeipa-management-v2.1.0}"
+REF="${3:-main}"
 
-if [[ ! "$OWNER" =~ ^[A-Za-z0-9_.-]+$ ]]; then
-  echo "Invalid GitHub owner: $OWNER" >&2
-  exit 1
-fi
+for value in "$OWNER" "$REPOSITORY" "$REF"; do
+  if [[ ! "$value" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+    echo "Invalid repository component: $value" >&2
+    exit 1
+  fi
+done
 
-sed -i "s#YOUR_GITHUB#${OWNER}#g" xyops.json README.md
+COMMAND="npx -y github:${OWNER}/${REPOSITORY}#${REF}"
 
-echo "Configured repository for GitHub owner: ${OWNER}"
-echo "Launch command: npx -y github:${OWNER}/xyOps-FreeIPA-Management#v2.1.0"
+node - "$COMMAND" <<'NODE'
+'use strict';
+
+const fs = require('node:fs');
+
+const command = process.argv[2];
+const path = 'xyops.json';
+const payload = JSON.parse(fs.readFileSync(path, 'utf8'));
+const pluginItem = payload.items.find((item) => (
+  item.type === 'plugin' && item.data && item.data.id === 'pmlc2ha8fipa1'
+));
+
+if (!pluginItem) {
+  throw new Error('FreeIPA plugin item pmlc2ha8fipa1 was not found in xyops.json');
+}
+
+pluginItem.data.command = command;
+fs.writeFileSync(path, `${JSON.stringify(payload, null, 2)}\n`);
+NODE
+
+echo "Configured xyops.json command: ${COMMAND}"
