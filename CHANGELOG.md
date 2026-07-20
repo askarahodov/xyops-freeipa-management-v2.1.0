@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.2.1
+
+- исправлена ошибка импорта `Toolset Data Error: field type is invalid`;
+- динамические `Bucket Menu` перенесены из `toolset.fields` в параметры верхнего уровня;
+- основной интерфейс использует общие поля `uid`, `groups` и `user_group_filter`;
+- создание и восстановление пользователя вынесены в отдельные Event Plugins;
+- `configure-repository.sh` теперь обновляет команду запуска во всех FreeIPA-плагинах XYPDF;
+- добавлена проверка, запрещающая неподдерживаемые типы вложенных полей Toolset.
+
 ## v2.2.0
 
 - добавлена операция `sync_directory_cache`;
