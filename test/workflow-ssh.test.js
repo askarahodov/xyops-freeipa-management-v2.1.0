@@ -37,7 +37,17 @@ test('workflow creates the user before splitting SSH hosts', () => {
   assert.equal(createToSplit.condition, 'success');
   assert.equal(sshNode.data.plugin, 'pmlc2ha8fssh1');
   assert.equal(sshNode.data.params.host_port, '{{ data.item }}');
+  assert.equal(sshNode.data.params.connect_timeout_seconds, '15');
   assert.match(sshNode.data.params.command, /Hello World/);
+});
+
+test('SSH timeout plugin parameter does not range-validate workflow macros during import', () => {
+  const timeoutParam = pluginConfig.items[0].data.params.find(
+    (param) => param.id === 'connect_timeout_seconds'
+  );
+  assert.ok(timeoutParam);
+  assert.equal(timeoutParam.value, 15);
+  assert.equal(Object.hasOwn(timeoutParam, 'range'), false);
 });
 
 test('portable workflow has no external tag dependencies', () => {
