@@ -1,6 +1,9 @@
 # Workflow: создание пользователя FreeIPA и SSH Hello World
 
-Файл импорта: `workflow-create-user-ssh.json`.
+Файлы импорта:
+
+1. `xyops-ssh-plugin.json` — SSH Event Plugin;
+2. `workflow-create-user-ssh.json` — workflow.
 
 ## Схема
 
@@ -16,14 +19,22 @@ SSH: printf 'Hello World\n'
 
 SSH jobs не запускаются, если создание пользователя завершилось ошибкой.
 
-## Импорт
+## Обязательный порядок импорта
 
-1. Сначала импортируйте основной `xyops.json` и убедитесь, что существует плагин `FreeIPA — Создать пользователя`.
-2. Импортируйте `workflow-create-user-ssh.json`.
-3. Подтвердите создание:
-   - плагина `SSH — Выполнить команду`;
-   - workflow `Создать пользователя FreeIPA → SSH Hello World`.
-4. Убедитесь, что target с ID `main` существует и имеет доступ к FreeIPA и SSH-серверам.
+xyOps проверяет все ссылки workflow до создания объектов из текущего XYPDF. Поэтому SSH-плагин должен существовать заранее.
+
+1. Импортируйте основной `xyops.json` и убедитесь, что существует плагин `FreeIPA — Создать пользователя` с ID `pmlc2ha8fipa_create`.
+2. Импортируйте `xyops-ssh-plugin.json`.
+3. Проверьте, что в Plugins появился `SSH — Выполнить команду` с ID `pmlc2ha8fssh1`.
+4. Только после этого импортируйте `workflow-create-user-ssh.json`.
+5. Если xyOps предложит обновить уже существующий SSH-плагин из второго файла, подтвердите замену.
+6. Убедитесь, что target с ID `main` существует и имеет доступ к FreeIPA и SSH-серверам.
+
+При нарушении порядка возникает ошибка:
+
+```text
+Malformed workflow node #nsshexec01: Unknown Plugin ID: pmlc2ha8fssh1
+```
 
 ## Secret Vault
 

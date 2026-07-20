@@ -9,6 +9,18 @@ const config = JSON.parse(fs.readFileSync(
   path.join(__dirname, '..', 'workflow-create-user-ssh.json'),
   'utf8'
 ));
+const sshPluginConfig = JSON.parse(fs.readFileSync(
+  path.join(__dirname, '..', 'xyops-ssh-plugin.json'),
+  'utf8'
+));
+
+test('standalone SSH plugin file contains the plugin required by workflow validation', () => {
+  const sshPlugin = sshPluginConfig.items.find(
+    (item) => item.type === 'plugin' && item.data.id === 'pmlc2ha8fssh1'
+  );
+  assert.ok(sshPlugin);
+  assert.equal(sshPlugin.data.params.find((param) => param.id === 'action').value, 'ssh_exec');
+});
 
 test('portable file contains SSH plugin and workflow', () => {
   const sshPlugin = config.items.find((item) => item.type === 'plugin' && item.data.id === 'pmlc2ha8fssh1');
