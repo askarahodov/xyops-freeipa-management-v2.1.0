@@ -269,6 +269,61 @@ function groupTable(groups) {
   };
 }
 
+function normalizeMenuText(value) {
+  return String(value ?? '').replace(/\s+/g, ' ').trim();
+}
+
+function userMenuItem(user, suffix = '') {
+  const uid = required(user.uid, 'user.uid');
+  const displayName = normalizeMenuText(user.name) || uid;
+  return {
+    id: uid,
+    title: `${displayName} (${uid})${suffix}`
+  };
+}
+
+function groupMenuItem(group) {
+  const name = required(group.name, 'group.name');
+  const description = normalizeMenuText(group.description);
+  return {
+    id: name,
+    title: description ? `${name} — ${description}` : name
+  };
+}
+
+function buildDirectoryCache(users, preservedUsers, groups, {
+  truncated = false,
+  updatedAt = new Date().toISOString()
+} = {}) {
+  const regularUsers = [...users].sort((a, b) => a.uid.localeCompare(b.uid));
+  const preserved = [...preservedUsers].sort((a, b) => a.uid.localeCompare(b.uid));
+  const sortedGroups = [...groups].sort((a, b) => a.name.localeCompare(b.name));
+  const enabledUsers = regularUsers.filter((user) => user.status === 'enabled');
+  const disabledUsers = regularUsers.filter((user) => user.status === 'disabled');
+
+  return {
+    users: regularUsers.map((user) => userMenuItem(
+      user,
+      user.status === 'disabled' ? ' — отключён' : ''
+    )),
+    enabled_users: enabledUsers.map((user) => userMenuItem(user)),
+    disabled_users: disabledUsers.map((user) => userMenuItem(user, ' — отключён')),
+    preserved_users: preserved.map((user) => userMenuItem(user, ' — сохранён')),
+    groups: sortedGroups.map(groupMenuItem),
+    metadata: {
+      updated_at: updatedAt,
+      truncated: Boolean(truncated),
+      counts: {
+        users: regularUsers.length,
+        enabled_users: enabledUsers.length,
+        disabled_users: disabledUsers.length,
+        preserved_users: preserved.length,
+        groups: sortedGroups.length
+      }
+    }
+  };
+}
+
 async function listUsers(params, client, send) {
   const criteria = optional(params.search_criteria) || '';
   const limit = asInteger(params.list_limit, 200, 1, 10000);
@@ -289,7 +344,13 @@ async function listUsers(params, client, send) {
 
   users.sort((a, b) => a.uid.localeCompare(b.uid));
   send({ table: userTable(users) });
-  send({ data: { freeipa_users: users, freeipa_users_truncated: truncated } });
+  send({
+    data: {
+      freeipa_users: users,
+      freeipa_user_ids: users.map((user) => user.uid),
+      freeipa_users_truncated: truncated
+    }
+  });
 
   return {
     description: `Found ${users.length} FreeIPA user(s)${truncated ? ' (result truncated)' : ''}`,
@@ -347,7 +408,13 @@ async function createUser(params, client, send) {
   const user = normalizeUser(result.result, false);
   user.groups = unique([...user.groups, ...addedGroups]);
   send({ table: userTable([user]) });
-  send({ data: { freeipa_user: user, freeipa_added_groups: addedGroups } });
+  send({
+    data: {
+      freeipa_user: user,
+      freeipa_added_groups: addedGroups,
+      freeipa_cache_refresh_required: true
+    }
+  });
   return {
     description: addedGroups.length
       ? `Created FreeIPA user ${uid} and added to ${addedGroups.length} group(s)`
@@ -362,7 +429,13 @@ async function deleteUser(params, client, send) {
   }
   const preserve = asBoolean(params.preserve_user, true);
   await client.rpc('user_del', [uid], { preserve });
-  send({ data: { freeipa_deleted_user: uid, freeipa_user_preserved: preserve } });
+  send({
+    data: {
+      freeipa_deleted_user: uid,
+      freeipa_user_preserved: preserve,
+      freeipa_cache_refresh_required: true
+    }
+  });
   return {
     description: preserve
       ? `Deleted and preserved FreeIPA user ${uid}`
@@ -376,14 +449,24 @@ async function deleteUser(params, client, send) {
 async function restoreUser(params, client, send) {
   const uid = required(params.uid, 'uid');
   await client.rpc('user_undel', [uid], {});
-  send({ data: { freeipa_restored_user: uid } });
+  send({
+    data: {
+      freeipa_restored_user: uid,
+      freeipa_cache_refresh_required: true
+    }
+  });
   return { description: `Restored preserved FreeIPA user ${uid}` };
 }
 
 async function simpleUserCommand(params, client, send, method, verb, dataKey) {
   const uid = required(params.uid, 'uid');
   await client.rpc(method, [uid], {});
-  send({ data: { [dataKey]: uid } });
+  send({
+    data: {
+      [dataKey]: uid,
+      freeipa_cache_refresh_required: true
+    }
+  });
   return { description: `${verb} FreeIPA user ${uid}` };
 }
 
@@ -395,10 +478,65 @@ async function listGroups(params, client, send) {
   const truncated = asBoolean(result.truncated);
 
   send({ table: groupTable(groups) });
-  send({ data: { freeipa_groups: groups, freeipa_groups_truncated: truncated } });
+  send({
+    data: {
+      freeipa_groups: groups,
+      freeipa_group_names: groups.map((group) => group.name),
+      freeipa_groups_truncated: truncated
+    }
+  });
   return {
     description: `Found ${groups.length} FreeIPA group(s)${truncated ? ' (result truncated)' : ''}`,
     details: truncated ? 'FreeIPA reported a truncated result. Increase **List limit** or narrow the search.' : undefined
+  };
+}
+
+async function syncDirectoryCache(params, client, send) {
+  const limit = asInteger(params.list_limit, 10000, 1, 10000);
+
+  const usersResult = await client.rpc('user_find', [''], { all: true, sizelimit: limit });
+  const preservedResult = await client.rpc('user_find', [''], {
+    all: true,
+    preserved: true,
+    sizelimit: limit
+  });
+  const groupsResult = await client.rpc('group_find', [''], { all: true, sizelimit: limit });
+
+  const users = entries(usersResult.result).map((entry) => normalizeUser(entry, false));
+  const preservedUsers = entries(preservedResult.result).map((entry) => normalizeUser(entry, true));
+  const groups = entries(groupsResult.result).map(normalizeGroup);
+  const truncated = asBoolean(usersResult.truncated)
+    || asBoolean(preservedResult.truncated)
+    || asBoolean(groupsResult.truncated);
+  const cache = buildDirectoryCache(users, preservedUsers, groups, { truncated });
+
+  send({
+    table: {
+      title: 'FreeIPA directory cache',
+      header: ['Object type', 'Count'],
+      rows: [
+        ['Users', cache.metadata.counts.users],
+        ['Enabled users', cache.metadata.counts.enabled_users],
+        ['Disabled users', cache.metadata.counts.disabled_users],
+        ['Preserved users', cache.metadata.counts.preserved_users],
+        ['Groups', cache.metadata.counts.groups]
+      ],
+      caption: `Updated ${cache.metadata.updated_at}`
+    }
+  });
+  send({
+    data: cache,
+    workflowData: {
+      freeipa_cache_updated_at: cache.metadata.updated_at,
+      freeipa_cache_truncated: cache.metadata.truncated
+    }
+  });
+
+  return {
+    description: `Prepared FreeIPA menu cache: ${cache.metadata.counts.users} user(s), ${cache.metadata.counts.groups} group(s)`,
+    details: truncated
+      ? 'FreeIPA truncated at least one result. Increase **List limit** before storing this data in the bucket.'
+      : 'Attach an **On Success → Store Bucket** action and store **Data** in bucket `bfreeipacache`.'
   };
 }
 
@@ -413,7 +551,13 @@ async function changeGroupMembership(params, client, send, method, actionText, d
     changed.push(group);
   }
 
-  send({ data: { freeipa_user: uid, [dataKey]: changed } });
+  send({
+    data: {
+      freeipa_user: uid,
+      [dataKey]: changed,
+      freeipa_cache_refresh_required: true
+    }
+  });
   return { description: `${actionText} user ${uid}: ${changed.join(', ')}` };
 }
 
@@ -433,6 +577,7 @@ const OPERATIONS = {
     params, client, send, 'user_unlock', 'Unlocked', 'freeipa_unlocked_user'
   ),
   list_groups: listGroups,
+  sync_directory_cache: syncDirectoryCache,
   add_user_to_groups: (params, client, send) => changeGroupMembership(
     params, client, send, 'group_add_member', 'Added to groups for', 'freeipa_added_groups'
   ),
@@ -499,12 +644,16 @@ module.exports = {
   OPERATIONS,
   asBoolean,
   asInteger,
+  buildDirectoryCache,
   entries,
   executeOperation,
+  groupMenuItem,
   groupTable,
   normalizeGroup,
   normalizeIpaBaseUrl,
   normalizeUser,
   splitList,
+  syncDirectoryCache,
+  userMenuItem,
   userTable
 };
