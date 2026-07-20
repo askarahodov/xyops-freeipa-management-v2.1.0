@@ -22,16 +22,21 @@ const fs = require('node:fs');
 const command = process.argv[2];
 const path = 'xyops.json';
 const payload = JSON.parse(fs.readFileSync(path, 'utf8'));
-const pluginItem = payload.items.find((item) => (
-  item.type === 'plugin' && item.data && item.data.id === 'pmlc2ha8fipa1'
-));
+let updated = 0;
 
-if (!pluginItem) {
-  throw new Error('FreeIPA plugin item pmlc2ha8fipa1 was not found in xyops.json');
+for (const item of payload.items || []) {
+  if (item.type !== 'plugin' || !item.data) continue;
+  if (!String(item.data.id || '').startsWith('pmlc2ha8fipa')) continue;
+  item.data.command = command;
+  updated += 1;
 }
 
-pluginItem.data.command = command;
+if (!updated) {
+  throw new Error('FreeIPA plugin items were not found in xyops.json');
+}
+
 fs.writeFileSync(path, `${JSON.stringify(payload, null, 2)}\n`);
+console.log(`Updated ${updated} FreeIPA plugin command(s).`);
 NODE
 
 echo "Configured xyops.json command: ${COMMAND}"
