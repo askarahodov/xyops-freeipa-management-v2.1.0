@@ -1,6 +1,6 @@
 {
   "name": "xyops-freeipa-management",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "private": true,
   "description": "xyOps FreeIPA management, SSH command execution and workflow orchestration plugins",
   "license": "MIT",
