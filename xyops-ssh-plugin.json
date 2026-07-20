@@ -33,8 +33,9 @@
             "id": "command",
             "title": "Команда",
             "type": "textarea",
-            "value": "printf 'Hello World\\n'",
-            "required": true
+            "value": "printf '=== %s ===\\n' \"$(hostname -f 2>/dev/null || hostname)\"; printenv | sort | awk -F= '{name=tolower($1); if (name ~ /(pass|token|secret|private|credential|auth|key)/) print $1 \"=[REDACTED]\"; else print $0}'",
+            "required": true,
+            "caption": "По умолчанию выводит переменные окружения SSH-сессии. Потенциально чувствительные значения маскируются."
           },
           {
             "id": "connect_timeout_seconds",
