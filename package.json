@@ -1,8 +1,8 @@
 {
   "name": "xyops-freeipa-management",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
-  "description": "xyOps Event Plugin for FreeIPA management with dynamic user and group menus backed by a Storage Bucket",
+  "description": "xyOps Event Plugins for FreeIPA management with top-level Bucket Menu selectors",
   "license": "MIT",
   "type": "commonjs",
   "bin": {
