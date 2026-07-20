@@ -1,0 +1,35 @@
+{
+  "type": "xypdf",
+  "description": "SSH command Event Plugin for xyOps",
+  "version": "1.0",
+  "xyops": "1.0.83",
+  "items": [
+    {
+      "type": "plugin",
+      "data": {
+        "id": "pmlc2ha8fssh1",
+        "title": "SSH — Выполнить команду",
+        "enabled": true,
+        "type": "event",
+        "command": "npx -y github:askarahodov/xyops-freeipa-management-v2.1.0#main",
+        "script": "",
+        "groups": [],
+        "format": "",
+        "params": [
+          { "id": "action", "title": "Action", "type": "hidden", "value": "ssh_exec" },
+          { "id": "host_port", "title": "Адрес и порт", "type": "text", "value": "", "required": true },
+          { "id": "command", "title": "Команда", "type": "textarea", "value": "printf 'Hello World\\n'", "required": true },
+          { "id": "connect_timeout_seconds", "title": "Тайм-аут подключения", "type": "text", "variant": "number", "value": 15, "range": "1 - 300 / 1", "required": true },
+          { "id": "strict_host_key", "title": "Проверять ключ SSH-хоста", "type": "checkbox", "value": false },
+          { "id": "host_fingerprint", "title": "SHA256 fingerprint ключа хоста", "type": "text", "value": "", "required": false }
+        ],
+        "notes": "Использует Secret Vault: SSH_USERNAME и SSH_PASSWORD либо SSH_PRIVATE_KEY.",
+        "icon": "console-network-outline",
+        "uid": "",
+        "gid": "",
+        "kill": "parent",
+        "runner": false
+      }
+    }
+  ]
+}
