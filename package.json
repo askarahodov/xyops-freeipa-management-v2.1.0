@@ -1,8 +1,8 @@
 {
   "name": "xyops-freeipa-management",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "private": true,
-  "description": "xyOps Event Plugins for FreeIPA management with top-level Bucket Menu selectors",
+  "description": "xyOps FreeIPA management, SSH command execution and workflow orchestration plugins",
   "license": "MIT",
   "type": "commonjs",
   "bin": {
@@ -10,7 +10,10 @@
   },
   "scripts": {
     "test": "node --test",
-    "check": "node --check index.js && node --check runner.js"
+    "check": "node --check index.js && node --check runner.js && node --check ssh.js"
+  },
+  "dependencies": {
+    "ssh2": "^1.17.0"
   },
   "engines": {
     "node": ">=18"

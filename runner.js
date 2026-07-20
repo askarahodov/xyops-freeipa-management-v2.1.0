@@ -54,24 +54,50 @@ function transformLine(line) {
   }
 }
 
-function main() {
-  const child = spawn(process.execPath, [path.join(__dirname, 'index.js')], {
+function getAction(input) {
+  const params = input?.params || {};
+  return String(params.action || params.operation || params.freeipa_tool || '').trim();
+}
+
+function selectEntrypoint(input) {
+  return getAction(input).startsWith('ssh_') ? 'ssh.js' : 'index.js';
+}
+
+async function readInput() {
+  const chunks = [];
+  for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
+  const buffer = Buffer.concat(chunks);
+  if (!buffer.length) throw new Error('xyOps did not provide JSON on STDIN');
+
+  let input;
+  try {
+    input = JSON.parse(buffer.toString('utf8'));
+  } catch (error) {
+    throw new Error(`xyOps provided invalid JSON on STDIN: ${error.message}`);
+  }
+
+  return { buffer, input };
+}
+
+async function main() {
+  const { buffer, input } = await readInput();
+  const entrypoint = selectEntrypoint(input);
+  const child = spawn(process.execPath, [path.join(__dirname, entrypoint)], {
     env: process.env,
     stdio: ['pipe', 'pipe', 'inherit']
   });
 
   child.on('error', (error) => {
-    process.stderr.write(`Failed to start FreeIPA plugin: ${error.message}\n`);
+    process.stderr.write(`Failed to start plugin entrypoint ${entrypoint}: ${error.message}\n`);
     process.exitCode = 1;
   });
 
   child.stdin.on('error', (error) => {
     if (error.code !== 'EPIPE') {
-      process.stderr.write(`Failed to send input to FreeIPA plugin: ${error.message}\n`);
+      process.stderr.write(`Failed to send input to plugin entrypoint ${entrypoint}: ${error.message}\n`);
     }
   });
-
-  process.stdin.pipe(child.stdin);
+  child.stdin.end(buffer);
 
   const output = readline.createInterface({
     input: child.stdout,
@@ -84,7 +110,7 @@ function main() {
 
   child.on('close', (code, signal) => {
     if (signal) {
-      process.stderr.write(`FreeIPA plugin stopped by signal ${signal}\n`);
+      process.stderr.write(`Plugin entrypoint ${entrypoint} stopped by signal ${signal}\n`);
       process.exitCode = 1;
       return;
     }
@@ -92,12 +118,23 @@ function main() {
   });
 }
 
-if (require.main === module) main();
+if (require.main === module) {
+  main().catch((error) => {
+    process.stdout.write(`${JSON.stringify({
+      xy: 1,
+      code: 1,
+      description: error.message || String(error)
+    })}\n`);
+    process.exitCode = 1;
+  });
+}
 
 module.exports = {
   MENU_KEYS,
   NONE_ITEM,
   addNoneOptions,
+  getAction,
+  selectEntrypoint,
   transformLine,
   withNoneOption
 };
