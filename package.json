@@ -1,16 +1,16 @@
 {
   "name": "xyops-freeipa-management",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "private": true,
   "description": "xyOps Event Plugins for FreeIPA management with top-level Bucket Menu selectors",
   "license": "MIT",
   "type": "commonjs",
   "bin": {
-    "xyops-freeipa-management": "index.js"
+    "xyops-freeipa-management": "runner.js"
   },
   "scripts": {
     "test": "node --test",
-    "check": "node --check index.js"
+    "check": "node --check index.js && node --check runner.js"
   },
   "engines": {
     "node": ">=18"
