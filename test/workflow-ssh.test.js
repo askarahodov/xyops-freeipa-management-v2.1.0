@@ -32,3 +32,12 @@ test('workflow creates the user before splitting SSH hosts', () => {
   assert.equal(sshNode.data.params.host_port, '{{ data.item }}');
   assert.match(sshNode.data.params.command, /Hello World/);
 });
+
+test('portable workflow does not require pre-created xyOps tags', () => {
+  const workflow = config.items.find((item) => item.type === 'event').data;
+  assert.deepEqual(workflow.tags, []);
+
+  for (const node of workflow.workflow.nodes.filter((item) => item.type === 'job')) {
+    assert.deepEqual(node.data.tags, []);
+  }
+});
