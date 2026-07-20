@@ -1,1 +1,455 @@
-{"type":"xypdf","description":"FreeIPA management with valid top-level Bucket Menu fields","version":"1.0","xyops":"1.0.83","items":[{"type":"bucket","data":{"id":"bfreeipacache","title":"Кэш каталога FreeIPA","enabled":true,"icon":"database-sync","notes":"Заполняется операцией sync_directory_cache и действием Store Bucket."}},{"type":"plugin","data":{"id":"pmlc2ha8fipa1","title":"Управление FreeIPA","enabled":true,"type":"event","command":"npx -y github:askarahodov/xyops-freeipa-management-v2.1.0#main","script":"","groups":[],"format":"","params":[{"id":"ipa_url","title":"URL FreeIPA","type":"text","value":"https://ipa.example.local","variant":"url","required":true},{"id":"ca_cert_path","title":"Сертификат CA FreeIPA","type":"text","value":"/etc/ipa/ca.crt","required":false},{"id":"timeout_seconds","title":"Тайм-аут","type":"text","variant":"number","value":30,"range":"1 - 300 / 1","required":true},{"id":"insecure_tls","title":"Отключить проверку TLS","type":"checkbox","value":false},{"id":"selection_group","title":"Выбор из кэша FreeIPA","type":"group","caption":"Поля Bucket Menu вынесены из Toolset, так как xyOps запрещает bucket внутри toolset.fields."},{"id":"uid","title":"Пользователь","type":"bucket","bucket_id":"bfreeipacache","bucket_path":"users","multiple":false,"required":false},{"id":"groups","title":"Группы","type":"bucket","bucket_id":"bfreeipacache","bucket_path":"groups","multiple":true,"required":false},{"id":"user_group_filter","title":"Фильтр по группе","type":"bucket","bucket_id":"bfreeipacache","bucket_path":"groups","multiple":false,"required":false},{"id":"freeipa_tool","title":"Операция FreeIPA","type":"toolset","data":{"default":"listUsers","tools":[{"id":"listUsers","title":"Список пользователей","fields":[{"id":"action","title":"Action","type":"hidden","value":"list_users"},{"id":"search_criteria","title":"Поиск","type":"text","value":""},{"id":"list_limit","title":"Лимит","type":"text","variant":"number","value":200,"range":"1 - 10000 / 1","required":true},{"id":"include_preserved","title":"Включить сохранённых","type":"checkbox","value":false}]},{"id":"showUser","title":"Показать пользователя","fields":[{"id":"action","title":"Action","type":"hidden","value":"show_user"}]},{"id":"deleteUser","title":"Удалить пользователя","fields":[{"id":"action","title":"Action","type":"hidden","value":"delete_user"},{"id":"preserve_user","title":"Сохранить запись","type":"checkbox","value":true},{"id":"confirm_destructive","title":"Подтвердить удаление","type":"checkbox","value":false}]},{"id":"disableUser","title":"Отключить пользователя","fields":[{"id":"action","title":"Action","type":"hidden","value":"disable_user"}]},{"id":"enableUser","title":"Включить пользователя","fields":[{"id":"action","title":"Action","type":"hidden","value":"enable_user"}]},{"id":"unlockUser","title":"Разблокировать пользователя","fields":[{"id":"action","title":"Action","type":"hidden","value":"unlock_user"}]},{"id":"listGroups","title":"Список групп","fields":[{"id":"action","title":"Action","type":"hidden","value":"list_groups"},{"id":"search_criteria","title":"Поиск","type":"text","value":""},{"id":"list_limit","title":"Лимит","type":"text","variant":"number","value":200,"range":"1 - 10000 / 1","required":true}]},{"id":"syncDirectoryCache","title":"Синхронизировать меню","fields":[{"id":"action","title":"Action","type":"hidden","value":"sync_directory_cache"},{"id":"list_limit","title":"Лимит","type":"text","variant":"number","value":10000,"range":"1 - 10000 / 1","required":true}]},{"id":"addUserToGroups","title":"Добавить пользователя в группы","fields":[{"id":"action","title":"Action","type":"hidden","value":"add_user_to_groups"}]},{"id":"removeUserFromGroups","title":"Удалить пользователя из групп","fields":[{"id":"action","title":"Action","type":"hidden","value":"remove_user_from_groups"}]}]}}],"notes":"Основные операции. Динамические uid/groups находятся на верхнем уровне.","icon":"users-cog","uid":"","gid":"","kill":"parent","runner":false}},{"type":"plugin","data":{"id":"pmlc2ha8fipa_create","title":"FreeIPA — Создать пользователя","enabled":true,"type":"event","command":"npx -y github:askarahodov/xyops-freeipa-management-v2.1.0#main","script":"","groups":[],"format":"","params":[{"id":"ipa_url","title":"URL FreeIPA","type":"text","value":"https://ipa.example.local","variant":"url","required":true},{"id":"ca_cert_path","title":"Сертификат CA FreeIPA","type":"text","value":"/etc/ipa/ca.crt","required":false},{"id":"timeout_seconds","title":"Тайм-аут","type":"text","variant":"number","value":30,"range":"1 - 300 / 1","required":true},{"id":"insecure_tls","title":"Отключить проверку TLS","type":"checkbox","value":false},{"id":"action","title":"Action","type":"hidden","value":"create_user"},{"id":"uid","title":"Логин","type":"text","value":"","required":true},{"id":"givenname","title":"Имя","type":"text","value":"","required":true},{"id":"sn","title":"Фамилия","type":"text","value":"","required":true},{"id":"mail","title":"Email","type":"text","variant":"email","value":""},{"id":"initial_password","title":"Начальный пароль","type":"text","variant":"password","value":""},{"id":"groups","title":"Группы","type":"bucket","bucket_id":"bfreeipacache","bucket_path":"groups","multiple":true,"required":false}],"notes":"Отдельная форма создания пользователя.","icon":"users-cog","uid":"","gid":"","kill":"parent","runner":false}},{"type":"plugin","data":{"id":"pmlc2ha8fipa_restore","title":"FreeIPA — Восстановить пользователя","enabled":true,"type":"event","command":"npx -y github:askarahodov/xyops-freeipa-management-v2.1.0#main","script":"","groups":[],"format":"","params":[{"id":"ipa_url","title":"URL FreeIPA","type":"text","value":"https://ipa.example.local","variant":"url","required":true},{"id":"ca_cert_path","title":"Сертификат CA FreeIPA","type":"text","value":"/etc/ipa/ca.crt","required":false},{"id":"timeout_seconds","title":"Тайм-аут","type":"text","variant":"number","value":30,"range":"1 - 300 / 1","required":true},{"id":"insecure_tls","title":"Отключить проверку TLS","type":"checkbox","value":false},{"id":"action","title":"Action","type":"hidden","value":"restore_user"},{"id":"uid","title":"Сохранённый пользователь","type":"bucket","bucket_id":"bfreeipacache","bucket_path":"preserved_users","multiple":false,"required":true}],"notes":"Отдельная форма восстановления сохранённого пользователя.","icon":"users-cog","uid":"","gid":"","kill":"parent","runner":false}}]}
+{
+  "type": "xypdf",
+  "description": "FreeIPA management with dynamic Bucket Menu fields",
+  "version": "1.0",
+  "xyops": "1.0.83",
+  "items": [
+    {
+      "type": "bucket",
+      "data": {
+        "id": "bfreeipacache",
+        "title": "Кэш каталога FreeIPA",
+        "enabled": true,
+        "icon": "database-sync",
+        "notes": "Заполняется операцией sync_directory_cache и действием Store Bucket."
+      }
+    },
+    {
+      "type": "plugin",
+      "data": {
+        "id": "pmlc2ha8fipa1",
+        "title": "Управление FreeIPA",
+        "enabled": true,
+        "type": "event",
+        "command": "npx -y github:askarahodov/xyops-freeipa-management-v2.1.0#main",
+        "script": "",
+        "groups": [],
+        "format": "",
+        "params": [
+          {
+            "id": "ipa_url",
+            "title": "URL FreeIPA",
+            "type": "text",
+            "value": "https://ipa.example.local",
+            "variant": "url",
+            "required": true
+          },
+          {
+            "id": "ca_cert_path",
+            "title": "Сертификат CA FreeIPA",
+            "type": "text",
+            "value": "/etc/ipa/ca.crt",
+            "required": false
+          },
+          {
+            "id": "timeout_seconds",
+            "title": "Тайм-аут",
+            "type": "text",
+            "variant": "number",
+            "value": 30,
+            "range": "1 - 300 / 1",
+            "required": true
+          },
+          {
+            "id": "insecure_tls",
+            "title": "Отключить проверку TLS",
+            "type": "checkbox",
+            "value": false
+          },
+          {
+            "id": "selection_group",
+            "title": "Выбор из кэша FreeIPA",
+            "type": "group",
+            "caption": "Поля пользователей и групп загружаются из Storage Bucket. Фильтр применяется только к операции «Список пользователей»."
+          },
+          {
+            "id": "uid",
+            "title": "Пользователь",
+            "type": "bucket",
+            "bucket_id": "bfreeipacache",
+            "bucket_path": "users",
+            "multiple": false,
+            "required": false
+          },
+          {
+            "id": "groups",
+            "title": "Группы",
+            "type": "bucket",
+            "bucket_id": "bfreeipacache",
+            "bucket_path": "groups",
+            "multiple": true,
+            "required": false
+          },
+          {
+            "id": "user_group_filter",
+            "title": "Фильтр списка пользователей по группе",
+            "type": "text",
+            "value": "",
+            "required": false,
+            "caption": "Необязательно. Укажите точное имя группы только для операции «Список пользователей». В операциях изменения членства поле игнорируется."
+          },
+          {
+            "id": "freeipa_tool",
+            "title": "Операция FreeIPA",
+            "type": "toolset",
+            "data": {
+              "default": "listUsers",
+              "tools": [
+                {
+                  "id": "listUsers",
+                  "title": "Список пользователей",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "list_users"
+                    },
+                    {
+                      "id": "search_criteria",
+                      "title": "Поиск",
+                      "type": "text",
+                      "value": ""
+                    },
+                    {
+                      "id": "list_limit",
+                      "title": "Лимит",
+                      "type": "text",
+                      "variant": "number",
+                      "value": 200,
+                      "range": "1 - 10000 / 1",
+                      "required": true
+                    },
+                    {
+                      "id": "include_preserved",
+                      "title": "Включить сохранённых",
+                      "type": "checkbox",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "id": "showUser",
+                  "title": "Показать пользователя",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "show_user"
+                    }
+                  ]
+                },
+                {
+                  "id": "deleteUser",
+                  "title": "Удалить пользователя",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "delete_user"
+                    },
+                    {
+                      "id": "preserve_user",
+                      "title": "Сохранить запись",
+                      "type": "checkbox",
+                      "value": true
+                    },
+                    {
+                      "id": "confirm_destructive",
+                      "title": "Подтвердить удаление",
+                      "type": "checkbox",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "id": "disableUser",
+                  "title": "Отключить пользователя",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "disable_user"
+                    }
+                  ]
+                },
+                {
+                  "id": "enableUser",
+                  "title": "Включить пользователя",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "enable_user"
+                    }
+                  ]
+                },
+                {
+                  "id": "unlockUser",
+                  "title": "Разблокировать пользователя",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "unlock_user"
+                    }
+                  ]
+                },
+                {
+                  "id": "listGroups",
+                  "title": "Список групп",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "list_groups"
+                    },
+                    {
+                      "id": "search_criteria",
+                      "title": "Поиск",
+                      "type": "text",
+                      "value": ""
+                    },
+                    {
+                      "id": "list_limit",
+                      "title": "Лимит",
+                      "type": "text",
+                      "variant": "number",
+                      "value": 200,
+                      "range": "1 - 10000 / 1",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "syncDirectoryCache",
+                  "title": "Синхронизировать меню",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "sync_directory_cache"
+                    },
+                    {
+                      "id": "list_limit",
+                      "title": "Лимит",
+                      "type": "text",
+                      "variant": "number",
+                      "value": 10000,
+                      "range": "1 - 10000 / 1",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "addUserToGroups",
+                  "title": "Добавить пользователя в группы",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "add_user_to_groups"
+                    }
+                  ]
+                },
+                {
+                  "id": "removeUserFromGroups",
+                  "title": "Удалить пользователя из групп",
+                  "fields": [
+                    {
+                      "id": "action",
+                      "title": "Action",
+                      "type": "hidden",
+                      "value": "remove_user_from_groups"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "notes": "Основные операции. Пользователь и группы выбираются из кэша. Фильтр по группе — необязательный текст и применяется только к списку пользователей.",
+        "icon": "users-cog",
+        "uid": "",
+        "gid": "",
+        "kill": "parent",
+        "runner": false
+      }
+    },
+    {
+      "type": "plugin",
+      "data": {
+        "id": "pmlc2ha8fipa_create",
+        "title": "FreeIPA — Создать пользователя",
+        "enabled": true,
+        "type": "event",
+        "command": "npx -y github:askarahodov/xyops-freeipa-management-v2.1.0#main",
+        "script": "",
+        "groups": [],
+        "format": "",
+        "params": [
+          {
+            "id": "ipa_url",
+            "title": "URL FreeIPA",
+            "type": "text",
+            "value": "https://ipa.example.local",
+            "variant": "url",
+            "required": true
+          },
+          {
+            "id": "ca_cert_path",
+            "title": "Сертификат CA FreeIPA",
+            "type": "text",
+            "value": "/etc/ipa/ca.crt",
+            "required": false
+          },
+          {
+            "id": "timeout_seconds",
+            "title": "Тайм-аут",
+            "type": "text",
+            "variant": "number",
+            "value": 30,
+            "range": "1 - 300 / 1",
+            "required": true
+          },
+          {
+            "id": "insecure_tls",
+            "title": "Отключить проверку TLS",
+            "type": "checkbox",
+            "value": false
+          },
+          {
+            "id": "action",
+            "title": "Action",
+            "type": "hidden",
+            "value": "create_user"
+          },
+          {
+            "id": "uid",
+            "title": "Логин",
+            "type": "text",
+            "value": "",
+            "required": true
+          },
+          {
+            "id": "givenname",
+            "title": "Имя",
+            "type": "text",
+            "value": "",
+            "required": true
+          },
+          {
+            "id": "sn",
+            "title": "Фамилия",
+            "type": "text",
+            "value": "",
+            "required": true
+          },
+          {
+            "id": "mail",
+            "title": "Email",
+            "type": "text",
+            "variant": "email",
+            "value": ""
+          },
+          {
+            "id": "initial_password",
+            "title": "Начальный пароль",
+            "type": "text",
+            "variant": "password",
+            "value": ""
+          },
+          {
+            "id": "groups",
+            "title": "Группы",
+            "type": "bucket",
+            "bucket_id": "bfreeipacache",
+            "bucket_path": "groups",
+            "multiple": true,
+            "required": false
+          }
+        ],
+        "notes": "Отдельная форма создания пользователя.",
+        "icon": "users-cog",
+        "uid": "",
+        "gid": "",
+        "kill": "parent",
+        "runner": false
+      }
+    },
+    {
+      "type": "plugin",
+      "data": {
+        "id": "pmlc2ha8fipa_restore",
+        "title": "FreeIPA — Восстановить пользователя",
+        "enabled": true,
+        "type": "event",
+        "command": "npx -y github:askarahodov/xyops-freeipa-management-v2.1.0#main",
+        "script": "",
+        "groups": [],
+        "format": "",
+        "params": [
+          {
+            "id": "ipa_url",
+            "title": "URL FreeIPA",
+            "type": "text",
+            "value": "https://ipa.example.local",
+            "variant": "url",
+            "required": true
+          },
+          {
+            "id": "ca_cert_path",
+            "title": "Сертификат CA FreeIPA",
+            "type": "text",
+            "value": "/etc/ipa/ca.crt",
+            "required": false
+          },
+          {
+            "id": "timeout_seconds",
+            "title": "Тайм-аут",
+            "type": "text",
+            "variant": "number",
+            "value": 30,
+            "range": "1 - 300 / 1",
+            "required": true
+          },
+          {
+            "id": "insecure_tls",
+            "title": "Отключить проверку TLS",
+            "type": "checkbox",
+            "value": false
+          },
+          {
+            "id": "action",
+            "title": "Action",
+            "type": "hidden",
+            "value": "restore_user"
+          },
+          {
+            "id": "uid",
+            "title": "Сохранённый пользователь",
+            "type": "bucket",
+            "bucket_id": "bfreeipacache",
+            "bucket_path": "preserved_users",
+            "multiple": false,
+            "required": true
+          }
+        ],
+        "notes": "Отдельная форма восстановления сохранённого пользователя.",
+        "icon": "users-cog",
+        "uid": "",
+        "gid": "",
+        "kill": "parent",
+        "runner": false
+      }
+    }
+  ]
+}
