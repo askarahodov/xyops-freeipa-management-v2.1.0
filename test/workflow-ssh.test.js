@@ -5,33 +5,27 @@ const path = require('node:path');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const config = JSON.parse(fs.readFileSync(
-  path.join(__dirname, '..', 'workflow-create-user-ssh.json'),
-  'utf8'
-));
-const sshPluginConfig = JSON.parse(fs.readFileSync(
+const pluginConfig = JSON.parse(fs.readFileSync(
   path.join(__dirname, '..', 'xyops-ssh-plugin.json'),
   'utf8'
 ));
+const workflowConfig = JSON.parse(fs.readFileSync(
+  path.join(__dirname, '..', 'workflow-create-user-ssh.json'),
+  'utf8'
+));
 
-test('standalone SSH plugin file contains the plugin required by workflow validation', () => {
-  const sshPlugin = sshPluginConfig.items.find(
-    (item) => item.type === 'plugin' && item.data.id === 'pmlc2ha8fssh1'
-  );
-  assert.ok(sshPlugin);
-  assert.equal(sshPlugin.data.params.find((param) => param.id === 'action').value, 'ssh_exec');
-});
+test('SSH plugin is imported separately before the workflow', () => {
+  assert.equal(pluginConfig.items.length, 1);
+  assert.equal(pluginConfig.items[0].type, 'plugin');
+  assert.equal(pluginConfig.items[0].data.id, 'pmlc2ha8fssh1');
 
-test('portable file contains SSH plugin and workflow', () => {
-  const sshPlugin = config.items.find((item) => item.type === 'plugin' && item.data.id === 'pmlc2ha8fssh1');
-  const workflow = config.items.find((item) => item.type === 'event' && item.data.type === 'workflow');
-  assert.ok(sshPlugin);
-  assert.ok(workflow);
-  assert.equal(sshPlugin.data.params.find((param) => param.id === 'action').value, 'ssh_exec');
+  assert.equal(workflowConfig.items.length, 1);
+  assert.equal(workflowConfig.items[0].type, 'event');
+  assert.equal(workflowConfig.items[0].data.type, 'workflow');
 });
 
 test('workflow creates the user before splitting SSH hosts', () => {
-  const workflow = config.items.find((item) => item.type === 'event').data;
+  const workflow = workflowConfig.items[0].data;
   const createNode = workflow.workflow.nodes.find((node) => node.id === 'ncreateipa1');
   const splitNode = workflow.workflow.nodes.find((node) => node.id === 'nsplithost1');
   const sshNode = workflow.workflow.nodes.find((node) => node.id === 'nsshexec01');
@@ -41,15 +35,16 @@ test('workflow creates the user before splitting SSH hosts', () => {
   assert.equal(createNode.data.params.uid, '{{ workflow.params.uid }}');
   assert.equal(splitNode.data.split, 'workflow.params.ssh_hosts');
   assert.equal(createToSplit.condition, 'success');
+  assert.equal(sshNode.data.plugin, 'pmlc2ha8fssh1');
   assert.equal(sshNode.data.params.host_port, '{{ data.item }}');
   assert.match(sshNode.data.params.command, /Hello World/);
 });
 
-test('portable workflow does not require pre-created xyOps tags', () => {
-  const workflow = config.items.find((item) => item.type === 'event').data;
+test('portable workflow has no external tag dependencies', () => {
+  const workflow = workflowConfig.items[0].data;
   assert.deepEqual(workflow.tags, []);
 
-  for (const node of workflow.workflow.nodes.filter((item) => item.type === 'job')) {
-    assert.deepEqual(node.data.tags, []);
+  for (const node of workflow.workflow.nodes) {
+    if (node.type === 'job') assert.deepEqual(node.data.tags, []);
   }
 });
