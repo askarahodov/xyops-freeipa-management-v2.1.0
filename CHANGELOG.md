@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.3.1
+
+- исправлена ошибка импорта `Malformed workflow node #nsshexec01: Unknown Plugin ID: pmlc2ha8fssh1`;
+- SSH Event Plugin и Workflow разделены на два XYPDF-файла;
+- `xyops-ssh-plugin.json` необходимо импортировать перед `workflow-create-user-ssh.json`;
+- workflow-файл больше не содержит новый Plugin и проверяется только после его установки;
+- добавлен тест обязательного порядка импорта.
+
 ## v2.3.0
 
 - добавлен Event Plugin `SSH — Выполнить команду`;
@@ -7,7 +15,7 @@
 - SSH-аутентификация выполняется через Secret Vault с паролем или приватным ключом;
 - добавлен portable workflow `Создать пользователя FreeIPA → SSH Hello World`;
 - после успешного создания пользователя список SSH-адресов обрабатывается Split Controller по одному адресу на job;
-- каждый SSH job выполняет `printf 'Hello World\\n'` и возвращает STDOUT, STDERR и exit code;
+- каждый SSH job выполняет `printf 'Hello World\n'` и возвращает STDOUT, STDERR и exit code;
 - добавлены проверки формата workflow и SSH-параметров.
 
 ## v2.2.2
