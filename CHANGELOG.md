@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.3.2
+
+- исправлена ошибка импорта `Invalid plugin parameter value 'connect_timeout_seconds' (1 - 300 / 1)`;
+- готовый workflow теперь передаёт числовой SSH-тайм-аут `15`, а не макрос;
+- из описания параметра SSH-плагина удалён `range`, несовместимый с workflow-макросами при импорте;
+- проверка допустимого диапазона 1–300 секунд остаётся в коде SSH-плагина при запуске.
+
 ## v2.3.1
 
 - исправлена ошибка импорта `Malformed workflow node #nsshexec01: Unknown Plugin ID: pmlc2ha8fssh1`;
