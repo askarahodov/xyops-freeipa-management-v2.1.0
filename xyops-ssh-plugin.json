@@ -1,72 +1,9 @@
 {
   "type": "xypdf",
-  "description": "SSH command and local user provisioning Event Plugins for xyOps",
+  "description": "Create or update one local Linux user over SSH",
   "version": "1.0",
   "xyops": "1.0.83",
   "items": [
-    {
-      "type": "plugin",
-      "data": {
-        "id": "pmlc2ha8fssh1",
-        "title": "SSH — Выполнить команду",
-        "enabled": true,
-        "type": "event",
-        "command": "npx -y github:askarahodov/xyops-freeipa-management-v2.1.0#main",
-        "script": "",
-        "groups": [],
-        "format": "",
-        "params": [
-          {
-            "id": "action",
-            "title": "Action",
-            "type": "hidden",
-            "value": "ssh_exec"
-          },
-          {
-            "id": "host_port",
-            "title": "Адрес и порт",
-            "type": "text",
-            "value": "",
-            "required": true
-          },
-          {
-            "id": "command",
-            "title": "Команда",
-            "type": "textarea",
-            "value": "printf 'Hello World\\n'",
-            "required": true
-          },
-          {
-            "id": "connect_timeout_seconds",
-            "title": "Тайм-аут подключения",
-            "type": "text",
-            "variant": "number",
-            "value": 15,
-            "required": true,
-            "caption": "Допустимый диапазон 1–300 секунд проверяется плагином при запуске."
-          },
-          {
-            "id": "strict_host_key",
-            "title": "Проверять ключ SSH-хоста",
-            "type": "checkbox",
-            "value": false
-          },
-          {
-            "id": "host_fingerprint",
-            "title": "SHA256 fingerprint ключа хоста",
-            "type": "text",
-            "value": "",
-            "required": false
-          }
-        ],
-        "notes": "Использует Secret Vault: SSH_USERNAME и SSH_PASSWORD либо SSH_PRIVATE_KEY.",
-        "icon": "console-network-outline",
-        "uid": "",
-        "gid": "",
-        "kill": "parent",
-        "runner": false
-      }
-    },
     {
       "type": "plugin",
       "data": {
@@ -113,11 +50,11 @@
             "type": "textarea",
             "value": "",
             "required": true,
-            "caption": "Одна строка в формате ssh-ed25519/ssh-rsa/ecdsa ..."
+            "caption": "Одна строка публичного ключа: ssh-ed25519, ssh-rsa или ecdsa."
           },
           {
             "id": "grant_sudo",
-            "title": "Разрешить sudo",
+            "title": "Разрешить sudo и sudo su",
             "type": "checkbox",
             "value": true
           },
@@ -126,7 +63,7 @@
             "title": "Sudo без пароля",
             "type": "checkbox",
             "value": false,
-            "caption": "Если выключено, sudo и sudo su запросят пароль созданного пользователя."
+            "caption": "Если выключено, sudo запросит пароль создаваемого пользователя."
           },
           {
             "id": "connect_timeout_seconds",
@@ -135,7 +72,7 @@
             "variant": "number",
             "value": 15,
             "required": true,
-            "caption": "Допустимый диапазон 1–300 секунд проверяется плагином при запуске."
+            "caption": "Допустимый диапазон 1–300 секунд проверяется при запуске."
           },
           {
             "id": "strict_host_key",
@@ -151,7 +88,7 @@
             "required": false
           }
         ],
-        "notes": "Создаёт или обновляет одного локального пользователя, домашний каталог, пароль, authorized_keys и sudo. Для подключения: SSH_USERNAME + SSH_PASSWORD либо SSH_PRIVATE_KEY. Для sudo с паролем: SSH_SUDO_PASSWORD (если не задан, используется SSH_PASSWORD).",
+        "notes": "Подключается к хосту технической SSH-учёткой и выполняет scripts/create-local-user.sh через sudo. Создаёт локального пользователя, пароль, home, authorized_keys и sudo. Не меняет root и sshd_config.",
         "icon": "account-key-outline",
         "uid": "",
         "gid": "",
