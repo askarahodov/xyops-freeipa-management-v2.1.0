@@ -1,6 +1,6 @@
 {
   "type": "xypdf",
-  "description": "Create or update one local Linux user over SSH",
+  "description": "SSH local-user management plugins",
   "version": "1.0",
   "xyops": "1.0.83",
   "items": [
@@ -90,6 +90,77 @@
         ],
         "notes": "Подключается к хосту технической SSH-учёткой и выполняет scripts/create-local-user.sh через sudo. Создаёт локального пользователя, пароль, home, authorized_keys и sudo. Не меняет root и sshd_config.",
         "icon": "account-key-outline",
+        "uid": "",
+        "gid": "",
+        "kill": "parent",
+        "runner": false
+      }
+    },
+    {
+      "type": "plugin",
+      "data": {
+        "id": "pmlc2ha8fssh_key_remove",
+        "title": "SSH — Удалить публичный ключ пользователя",
+        "enabled": true,
+        "type": "event",
+        "command": "npx -y github:askarahodov/xyops-freeipa-management-v2.1.0#main",
+        "script": "",
+        "groups": [],
+        "format": "",
+        "params": [
+          {
+            "id": "action",
+            "title": "Action",
+            "type": "hidden",
+            "value": "ssh_remove_user_key"
+          },
+          {
+            "id": "host_port",
+            "title": "Адрес и порт",
+            "type": "text",
+            "value": "",
+            "required": true
+          },
+          {
+            "id": "username",
+            "title": "Логин пользователя",
+            "type": "text",
+            "value": "",
+            "required": true
+          },
+          {
+            "id": "public_key",
+            "title": "Открытый SSH-ключ для удаления",
+            "type": "textarea",
+            "value": "",
+            "required": true,
+            "caption": "Удаляется ключ с совпадающими типом и base64-частью. Комментарий ключа может отличаться."
+          },
+          {
+            "id": "connect_timeout_seconds",
+            "title": "Тайм-аут подключения",
+            "type": "text",
+            "variant": "number",
+            "value": 15,
+            "required": true,
+            "caption": "Допустимый диапазон 1–300 секунд проверяется при запуске."
+          },
+          {
+            "id": "strict_host_key",
+            "title": "Проверять ключ SSH-хоста",
+            "type": "checkbox",
+            "value": false
+          },
+          {
+            "id": "host_fingerprint",
+            "title": "SHA256 fingerprint ключа хоста",
+            "type": "text",
+            "value": "",
+            "required": false
+          }
+        ],
+        "notes": "Подключается к хосту технической SSH-учёткой и удаляет только указанный ключ из authorized_keys локального пользователя. Пользователь, пароль, sudo и остальные ключи не изменяются.",
+        "icon": "key-remove",
         "uid": "",
         "gid": "",
         "kill": "parent",
