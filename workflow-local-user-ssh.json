@@ -1,0 +1,160 @@
+{
+  "type": "xypdf",
+  "description": "Create or update one local Linux user on multiple SSH hosts without FreeIPA",
+  "version": "1.0",
+  "xyops": "1.0.83",
+  "items": [
+    {
+      "type": "event",
+      "data": {
+        "id": "elocalsshuser01",
+        "title": "Создать локального SSH-пользователя на хостах",
+        "enabled": true,
+        "targets": [],
+        "params": {},
+        "fields": [
+          {
+            "id": "username",
+            "title": "Логин пользователя",
+            "type": "text",
+            "value": "",
+            "required": true
+          },
+          {
+            "id": "user_password",
+            "title": "Пароль пользователя",
+            "type": "text",
+            "variant": "password",
+            "value": "",
+            "required": true
+          },
+          {
+            "id": "public_key",
+            "title": "Открытый SSH-ключ пользователя",
+            "type": "textarea",
+            "value": "",
+            "required": true,
+            "caption": "Вставьте одну строку публичного ключа, например ssh-ed25519 AAAA... user@host."
+          },
+          {
+            "id": "grant_sudo",
+            "title": "Разрешить sudo и sudo su",
+            "type": "checkbox",
+            "value": true
+          },
+          {
+            "id": "passwordless_sudo",
+            "title": "Sudo без пароля",
+            "type": "checkbox",
+            "value": false,
+            "caption": "Если выключено, sudo запросит пароль создаваемого пользователя."
+          },
+          {
+            "id": "ssh_hosts",
+            "title": "SSH-адреса и порты",
+            "type": "textarea",
+            "value": "192.168.1.10:22\n192.168.1.11:2222",
+            "required": true,
+            "caption": "По одному host:port на строку. На каждом хосте будет создан или обновлён локальный пользователь."
+          }
+        ],
+        "triggers": [
+          {
+            "enabled": true,
+            "type": "manual",
+            "id": "nlocalsshtrig1"
+          }
+        ],
+        "limits": [
+          {
+            "type": "job",
+            "enabled": true,
+            "amount": 1
+          },
+          {
+            "type": "queue",
+            "enabled": true,
+            "amount": 0
+          },
+          {
+            "type": "retry",
+            "enabled": true,
+            "amount": 0,
+            "duration": 0
+          }
+        ],
+        "actions": [],
+        "notes": "Создаёт или обновляет локальную Linux-учётную запись на каждом SSH-хосте без создания пользователя FreeIPA. Устанавливает пароль, создаёт home, записывает authorized_keys и настраивает sudo. Глобальный sshd_config и пароль root не изменяются.",
+        "workflow": {
+          "nodes": [
+            {
+              "id": "nlocalsshtrig1",
+              "type": "trigger",
+              "x": -120,
+              "y": 240
+            },
+            {
+              "id": "nlocalsplithosts1",
+              "type": "controller",
+              "x": 150,
+              "y": 240,
+              "data": {
+                "controller": "split",
+                "split": "workflow.params.ssh_hosts",
+                "continue": 100
+              }
+            },
+            {
+              "id": "nlocalsshcreate1",
+              "type": "job",
+              "x": 430,
+              "y": 160,
+              "data": {
+                "params": {
+                  "action": "ssh_provision_user",
+                  "host_port": "{{ data.item }}",
+                  "username": "{{ workflow.params.username }}",
+                  "user_password": "{{ workflow.params.user_password }}",
+                  "public_key": "{{ workflow.params.public_key }}",
+                  "grant_sudo": "{{ workflow.params.grant_sudo }}",
+                  "passwordless_sudo": "{{ workflow.params.passwordless_sudo }}",
+                  "connect_timeout_seconds": "15",
+                  "strict_host_key": false,
+                  "host_fingerprint": ""
+                },
+                "targets": [
+                  "main"
+                ],
+                "algo": "random",
+                "label": "Создать локального пользователя",
+                "category": "general",
+                "plugin": "pmlc2ha8fssh_user",
+                "icon": "account-key-outline",
+                "tags": []
+              }
+            }
+          ],
+          "connections": [
+            {
+              "id": "clocalstartsplit",
+              "source": "nlocalsshtrig1",
+              "dest": "nlocalsplithosts1"
+            },
+            {
+              "id": "clocalsplitcreate",
+              "source": "nlocalsplithosts1",
+              "dest": "nlocalsshcreate1"
+            }
+          ]
+        },
+        "category": "general",
+        "type": "workflow",
+        "icon": "account-multiple-plus-outline",
+        "tags": [],
+        "plugin": "_workflow",
+        "username": "admin",
+        "revision": 1
+      }
+    }
+  ]
+}
