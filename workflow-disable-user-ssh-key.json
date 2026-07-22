@@ -1,6 +1,6 @@
 {
   "type": "xypdf",
-  "description": "Disable a FreeIPA user and remove all SSH public keys for the same local user from multiple hosts",
+  "description": "Workflow отключает пользователя FreeIPA и после успешного результата удаляет файл authorized_keys одноимённого локального пользователя на всех указанных SSH-хостах.",
   "version": "1.0",
   "xyops": "1.0.83",
   "items": [
@@ -19,27 +19,31 @@
             "type": "text",
             "variant": "url",
             "value": "https://ipa.example.local",
-            "required": true
+            "required": true,
+            "caption": "Базовый HTTPS-адрес FreeIPA."
           },
           {
             "id": "ca_cert_path",
             "title": "Сертификат CA FreeIPA",
             "type": "text",
             "value": "/etc/ipa/ca.crt",
-            "required": false
+            "required": false,
+            "caption": "Путь к CA-сертификату на xySat; можно использовать IPA_CA_CERT_PATH из Secret Vault."
           },
           {
             "id": "insecure_tls",
             "title": "Отключить проверку TLS FreeIPA",
             "type": "checkbox",
-            "value": false
+            "value": false,
+            "caption": "Только для диагностики. В production оставляйте выключенным."
           },
           {
             "id": "uid",
             "title": "Логин пользователя",
             "type": "text",
             "value": "",
-            "required": true
+            "required": true,
+            "caption": "Один логин используется для отключения FreeIPA и поиска локального пользователя на нодах."
           },
           {
             "id": "ssh_hosts",
@@ -47,7 +51,7 @@
             "type": "textarea",
             "value": "192.168.1.10:22\n192.168.1.11:2222",
             "required": true,
-            "caption": "По одному host:port на строку."
+            "caption": "По одному host:port на строку. SSH-шаги выполняются только после успешного отключения FreeIPA."
           }
         ],
         "triggers": [
@@ -76,7 +80,7 @@
           }
         ],
         "actions": [],
-        "notes": "Сначала отключает пользователя в FreeIPA. Только после успеха удаляет файл authorized_keys локального пользователя на каждом SSH-хосте. Локальная учётная запись, пароль, домашний каталог и sudo сохраняются. Активные SSH-сессии не завершаются.",
+        "notes": "Сценарий отключения доступа: сначала отключает пользователя в FreeIPA, затем удаляет весь ~/.ssh/authorized_keys одноимённого локального пользователя на каждой ноде. Локальная учётная запись, пароль, home и sudo сохраняются; активные SSH-сессии не завершаются, вход по паролю отдельно не блокируется. Требует FreeIPA- и SSH-секреты.",
         "workflow": {
           "nodes": [
             {
