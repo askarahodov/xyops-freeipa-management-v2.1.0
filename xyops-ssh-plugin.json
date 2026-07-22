@@ -1,6 +1,6 @@
 {
   "type": "xypdf",
-  "description": "SSH local-user management plugins",
+  "description": "SSH Events для создания локальных Linux-пользователей и удаления их файла authorized_keys на удалённых хостах.",
   "version": "1.0",
   "xyops": "1.0.83",
   "items": [
@@ -27,14 +27,16 @@
             "title": "Адрес и порт",
             "type": "text",
             "value": "",
-            "required": true
+            "required": true,
+            "caption": "SSH-адрес в формате host:port, например server01.example.local:22 или 192.168.1.10:2222."
           },
           {
             "id": "username",
             "title": "Логин пользователя",
             "type": "text",
             "value": "",
-            "required": true
+            "required": true,
+            "caption": "Локальный Linux-пользователь, который будет создан или обновлён на удалённом хосте."
           },
           {
             "id": "user_password",
@@ -42,7 +44,8 @@
             "type": "text",
             "variant": "password",
             "value": "",
-            "required": true
+            "required": true,
+            "caption": "Пароль создаваемого локального пользователя. Это параметр Event, а не Secret Vault."
           },
           {
             "id": "public_key",
@@ -50,20 +53,21 @@
             "type": "textarea",
             "value": "",
             "required": true,
-            "caption": "Одна строка публичного ключа: ssh-ed25519, ssh-rsa или ecdsa."
+            "caption": "Одна строка публичного ключа: ssh-ed25519, ssh-rsa или ecdsa. Ключ добавляется в ~/.ssh/authorized_keys без дублирования."
           },
           {
             "id": "grant_sudo",
             "title": "Разрешить sudo и sudo su",
             "type": "checkbox",
-            "value": true
+            "value": true,
+            "caption": "Создаёт отдельное управляемое правило /etc/sudoers.d/90-xyops-<username>."
           },
           {
             "id": "passwordless_sudo",
             "title": "Sudo без пароля",
             "type": "checkbox",
             "value": false,
-            "caption": "Если выключено, sudo запросит пароль создаваемого пользователя."
+            "caption": "Если выключено, sudo запросит пароль создаваемого пользователя. Используйте NOPASSWD только при необходимости."
           },
           {
             "id": "connect_timeout_seconds",
@@ -78,17 +82,19 @@
             "id": "strict_host_key",
             "title": "Проверять ключ SSH-хоста",
             "type": "checkbox",
-            "value": false
+            "value": false,
+            "caption": "Если включено, фактический host key сравнивается с SHA256 fingerprint ниже."
           },
           {
             "id": "host_fingerprint",
             "title": "SHA256 fingerprint ключа хоста",
             "type": "text",
             "value": "",
-            "required": false
+            "required": false,
+            "caption": "Отпечаток SSH-сервера в формате SHA256:... . Это не публичный ключ создаваемого пользователя."
           }
         ],
-        "notes": "Подключается к хосту технической SSH-учёткой и выполняет scripts/create-local-user.sh через sudo. Создаёт локального пользователя, пароль, home, authorized_keys и sudo. Не меняет root и sshd_config.",
+        "notes": "Подключается к серверу технической учётной записью из Secret Vault: SSH_USERNAME и SSH_PASSWORD либо SSH_PRIVATE_KEY; при необходимости использует SSH_PASSPHRASE и SSH_SUDO_PASSWORD. Через sudo создаёт или обновляет локального пользователя, пароль, home, authorized_keys и sudo. Не создаёт пользователя FreeIPA, не меняет root и sshd_config.",
         "icon": "account-key-outline",
         "uid": "",
         "gid": "",
@@ -119,14 +125,16 @@
             "title": "Адрес и порт",
             "type": "text",
             "value": "",
-            "required": true
+            "required": true,
+            "caption": "SSH-адрес в формате host:port."
           },
           {
             "id": "username",
             "title": "Логин пользователя",
             "type": "text",
             "value": "",
-            "required": true
+            "required": true,
+            "caption": "Локальный Linux-пользователь, у которого будет удалён файл ~/.ssh/authorized_keys."
           },
           {
             "id": "connect_timeout_seconds",
@@ -141,17 +149,19 @@
             "id": "strict_host_key",
             "title": "Проверять ключ SSH-хоста",
             "type": "checkbox",
-            "value": false
+            "value": false,
+            "caption": "Если включено, фактический host key сравнивается с SHA256 fingerprint ниже."
           },
           {
             "id": "host_fingerprint",
             "title": "SHA256 fingerprint ключа хоста",
             "type": "text",
             "value": "",
-            "required": false
+            "required": false,
+            "caption": "Отпечаток SSH-сервера в формате SHA256:... ."
           }
         ],
-        "notes": "Подключается к хосту технической SSH-учёткой и удаляет файл authorized_keys локального пользователя. Локальный пользователь, пароль, домашний каталог и sudo не изменяются.",
+        "notes": "Подключается технической SSH-учёткой из Secret Vault и через sudo удаляет весь файл ~/.ssh/authorized_keys указанного локального пользователя. Локальная учётная запись, пароль, home и sudo сохраняются. Активные SSH-сессии не завершаются, а вход по паролю остаётся возможен, если он разрешён sshd.",
         "icon": "key-remove",
         "uid": "",
         "gid": "",
