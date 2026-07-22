@@ -1,8 +1,8 @@
 {
   "name": "xyops-freeipa-management",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "private": true,
-  "description": "xyOps FreeIPA management and SSH local-user provisioning workflow",
+  "description": "xyOps FreeIPA management and SSH local-user lifecycle workflows",
   "license": "MIT",
   "type": "commonjs",
   "bin": {
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "test": "node --test",
-    "check": "node --check index.js && node --check runner.js && node --check ssh.js && bash -n scripts/create-local-user.sh"
+    "check": "node --check index.js && node --check runner.js && node --check ssh.js && node --check ssh-remove-key.js && bash -n scripts/create-local-user.sh && bash -n scripts/remove-user-ssh-key.sh"
   },
   "dependencies": {
     "ssh2": "^1.17.0"
