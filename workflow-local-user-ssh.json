@@ -1,6 +1,6 @@
 {
   "type": "xypdf",
-  "description": "Create or update one local Linux user on multiple SSH hosts without FreeIPA",
+  "description": "Независимый Workflow создаёт или обновляет локального Linux-пользователя на нескольких SSH-хостах без обращения к FreeIPA.",
   "version": "1.0",
   "xyops": "1.0.83",
   "items": [
@@ -18,7 +18,8 @@
             "title": "Логин пользователя",
             "type": "text",
             "value": "",
-            "required": true
+            "required": true,
+            "caption": "Локальный Linux-логин, одинаковый для всех указанных нод."
           },
           {
             "id": "user_password",
@@ -26,7 +27,8 @@
             "type": "text",
             "variant": "password",
             "value": "",
-            "required": true
+            "required": true,
+            "caption": "Пароль создаваемого локального пользователя. Это параметр запуска, а не секрет технической SSH-учётки."
           },
           {
             "id": "public_key",
@@ -34,13 +36,14 @@
             "type": "textarea",
             "value": "",
             "required": true,
-            "caption": "Вставьте одну строку публичного ключа, например ssh-ed25519 AAAA... user@host."
+            "caption": "Одна строка публичного ключа, добавляемая в ~/.ssh/authorized_keys."
           },
           {
             "id": "grant_sudo",
             "title": "Разрешить sudo и sudo su",
             "type": "checkbox",
-            "value": true
+            "value": true,
+            "caption": "Создаёт отдельное правило /etc/sudoers.d/90-xyops-<username>."
           },
           {
             "id": "passwordless_sudo",
@@ -55,7 +58,7 @@
             "type": "textarea",
             "value": "192.168.1.10:22\n192.168.1.11:2222",
             "required": true,
-            "caption": "По одному host:port на строку. На каждом хосте будет создан или обновлён локальный пользователь."
+            "caption": "По одному host:port на строку. Для каждой строки запускается отдельный SSH Job."
           }
         ],
         "triggers": [
@@ -84,7 +87,7 @@
           }
         ],
         "actions": [],
-        "notes": "Создаёт или обновляет локальную Linux-учётную запись на каждом SSH-хосте без создания пользователя FreeIPA. Устанавливает пароль, создаёт home, записывает authorized_keys и настраивает sudo. Глобальный sshd_config и пароль root не изменяются.",
+        "notes": "Создаёт или обновляет локального Linux-пользователя на каждой SSH-ноде без FreeIPA: устанавливает пароль, создаёт home, добавляет публичный ключ и настраивает sudo. Требует только SSH-секреты технической учётной записи. Не меняет root и глобальный sshd_config.",
         "workflow": {
           "nodes": [
             {
