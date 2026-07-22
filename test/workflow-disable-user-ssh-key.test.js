@@ -15,16 +15,23 @@ const workflowConfig = JSON.parse(fs.readFileSync(
   'utf8'
 ));
 
-test('SSH import contains the key-removal plugin', () => {
+test('SSH import contains the all-keys removal plugin', () => {
   const plugin = pluginConfig.items.find(
     (item) => item.data.id === 'pmlc2ha8fssh_key_remove'
   );
 
   assert.ok(plugin);
-  assert.equal(plugin.data.title, 'SSH — Удалить публичный ключ пользователя');
+  assert.equal(
+    plugin.data.title,
+    'SSH — Удалить все публичные ключи пользователя'
+  );
+  assert.equal(
+    plugin.data.params.some((param) => param.id === 'public_key'),
+    false
+  );
 });
 
-test('workflow disables FreeIPA before removing SSH keys', () => {
+test('workflow disables FreeIPA before removing all SSH keys', () => {
   const workflow = workflowConfig.items[0].data;
   const disableNode = workflow.workflow.nodes.find(
     (node) => node.id === 'ndisableipa1'
@@ -49,7 +56,11 @@ test('workflow disables FreeIPA before removing SSH keys', () => {
   assert.equal(keyNode.data.params.action, 'ssh_remove_user_key');
   assert.equal(keyNode.data.params.username, '{{ workflow.params.uid }}');
   assert.equal(
-    keyNode.data.params.public_key,
-    '{{ workflow.params.ssh_public_key }}'
+    Object.prototype.hasOwnProperty.call(keyNode.data.params, 'public_key'),
+    false
+  );
+  assert.equal(
+    workflow.fields.some((field) => field.id === 'ssh_public_key'),
+    false
   );
 });
