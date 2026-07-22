@@ -1,6 +1,6 @@
 {
   "name": "xyops-freeipa-management",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "private": true,
   "description": "xyOps FreeIPA management and SSH local-user lifecycle workflows",
   "license": "MIT",
