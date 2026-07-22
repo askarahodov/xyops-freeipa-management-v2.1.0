@@ -10,7 +10,6 @@ const {
   executePrivilegedScript,
   fingerprintSha256,
   normalizeFingerprint,
-  normalizePublicKey,
   normalizeUsername,
   parseHostPort,
   resolveAuth,
@@ -48,13 +47,11 @@ function loadRemoveKeyScript() {
   );
 }
 
-function buildRemoveKeyPayload({ username, publicKey }) {
+function buildRemoveKeyPayload({ username }) {
   const normalizedUsername = normalizeUsername(username);
-  const normalizedPublicKey = normalizePublicKey(publicKey);
 
   return [
     `export XYOPS_USERNAME_B64='${toBase64(normalizedUsername)}'`,
-    `export XYOPS_PUBLIC_KEY_B64='${toBase64(normalizedPublicKey)}'`,
     loadRemoveKeyScript()
   ].join('\n');
 }
@@ -107,14 +104,11 @@ async function main() {
   }
 
   const username = normalizeUsername(params.username);
-  const payload = buildRemoveKeyPayload({
-    username,
-    publicKey: params.public_key
-  });
+  const payload = buildRemoveKeyPayload({ username });
   const sudoPassword = resolveSudoPassword(input, auth);
 
   emit({
-    status: `Removing SSH key for ${username} on ${host}:${port}`,
+    status: `Removing all SSH public keys for ${username} on ${host}:${port}`,
     progress: 0.25
   });
 
@@ -129,7 +123,7 @@ async function main() {
 
   emit({
     table: {
-      title: 'SSH public key removal result',
+      title: 'SSH public keys removal result',
       header: [
         'Host',
         'Port',
@@ -169,7 +163,7 @@ async function main() {
     emit({
       code: result.code || 1,
       description:
-        `Failed to remove SSH key for ${username} on ${host}:${port}`,
+        `Failed to remove SSH keys for ${username} on ${host}:${port}`,
       details: result.stderr
         ? `STDERR:\n\n\`\`\`text\n${result.stderr.trim()}\n\`\`\``
         : undefined
@@ -180,7 +174,7 @@ async function main() {
 
   emit({
     code: 0,
-    description: `SSH key for ${username} processed on ${host}:${port}`
+    description: `SSH keys for ${username} removed on ${host}:${port}`
   });
 }
 
