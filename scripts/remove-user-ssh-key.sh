@@ -38,7 +38,7 @@ print_result() {
 [[ "$(id -u)" -eq 0 ]] ||
     fail 13 "Скрипт должен выполняться от root"
 
-for command_name in awk base64 getent grep id install mktemp mv rm; do
+for command_name in awk base64 getent id install mktemp mv rm; do
     require_command "$command_name"
 done
 
@@ -73,7 +73,10 @@ esac
 printf '%s' "$KEY_DATA" | base64 -d >/dev/null 2>&1 ||
     fail 16 "Повреждена base64-часть публичного SSH-ключа"
 
-if ! grep -qE "^${USERNAME}:" /etc/passwd; then
+if ! awk -F: -v user="$USERNAME" '
+    $1 == user { found = 1 }
+    END { exit !found }
+' /etc/passwd; then
     KEY_ACTION='local-user-not-found'
     REMOVED_COUNT=0
     log "Локальный пользователь $USERNAME отсутствует; изменений нет"
