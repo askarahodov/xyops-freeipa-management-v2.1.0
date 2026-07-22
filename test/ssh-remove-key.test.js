@@ -17,20 +17,13 @@ test('runner routes SSH key removal to its entrypoint', () => {
   );
 });
 
-test('SSH key removal payload contains no cleartext key', () => {
-  const publicKey =
-    'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEexamplekey user@test';
-
+test('SSH key removal payload contains only the encoded username', () => {
   const payload = buildRemoveKeyPayload({
-    username: 'testuser',
-    publicKey
+    username: 'testuser'
   });
 
   assert.match(payload, /XYOPS_USERNAME_B64/);
+  assert.doesNotMatch(payload, /XYOPS_PUBLIC_KEY_B64/);
   assert.match(payload, /remove-user-ssh-key/);
-  assert.doesNotMatch(
-    payload,
-    new RegExp(publicKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-  );
-  assert.match(loadRemoveKeyScript(), /authorized_keys/);
+  assert.match(loadRemoveKeyScript(), /rm -f -- "\$AUTHORIZED_KEYS"/);
 });
