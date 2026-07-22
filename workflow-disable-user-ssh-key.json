@@ -1,6 +1,6 @@
 {
   "type": "xypdf",
-  "description": "Disable a FreeIPA user and remove the same user's public SSH key from multiple hosts",
+  "description": "Disable a FreeIPA user and remove all SSH public keys for the same local user from multiple hosts",
   "version": "1.0",
   "xyops": "1.0.83",
   "items": [
@@ -8,7 +8,7 @@
       "type": "event",
       "data": {
         "id": "efreeipadisablekey",
-        "title": "Отключить пользователя FreeIPA → удалить SSH-ключ на хостах",
+        "title": "Отключить пользователя FreeIPA → удалить все SSH-ключи на хостах",
         "enabled": true,
         "targets": [],
         "params": {},
@@ -40,14 +40,6 @@
             "type": "text",
             "value": "",
             "required": true
-          },
-          {
-            "id": "ssh_public_key",
-            "title": "Открытый SSH-ключ для удаления",
-            "type": "textarea",
-            "value": "",
-            "required": true,
-            "caption": "Вставьте публичный ключ пользователя одной строкой. Комментарий ключа может отличаться от записи на сервере."
           },
           {
             "id": "ssh_hosts",
@@ -84,7 +76,7 @@
           }
         ],
         "actions": [],
-        "notes": "Сначала отключает пользователя в FreeIPA. Только после успеха удаляет указанный публичный ключ из authorized_keys локального пользователя на каждом SSH-хосте. Локальная учётная запись, пароль, sudo и остальные ключи сохраняются.",
+        "notes": "Сначала отключает пользователя в FreeIPA. Только после успеха удаляет файл authorized_keys локального пользователя на каждом SSH-хосте. Локальная учётная запись, пароль, домашний каталог и sudo сохраняются. Активные SSH-сессии не завершаются.",
         "workflow": {
           "nodes": [
             {
@@ -140,7 +132,6 @@
                   "action": "ssh_remove_user_key",
                   "host_port": "{{ data.item }}",
                   "username": "{{ workflow.params.uid }}",
-                  "public_key": "{{ workflow.params.ssh_public_key }}",
                   "connect_timeout_seconds": "15",
                   "strict_host_key": false,
                   "host_fingerprint": ""
@@ -149,7 +140,7 @@
                   "main"
                 ],
                 "algo": "random",
-                "label": "Удалить публичный SSH-ключ",
+                "label": "Удалить все публичные SSH-ключи",
                 "category": "general",
                 "plugin": "pmlc2ha8fssh_key_remove",
                 "icon": "key-remove",
@@ -182,7 +173,7 @@
         "tags": [],
         "plugin": "_workflow",
         "username": "admin",
-        "revision": 1
+        "revision": 2
       }
     }
   ]
