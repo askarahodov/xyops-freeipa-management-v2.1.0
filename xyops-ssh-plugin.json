@@ -100,7 +100,7 @@
       "type": "plugin",
       "data": {
         "id": "pmlc2ha8fssh_key_remove",
-        "title": "SSH — Удалить публичный ключ пользователя",
+        "title": "SSH — Удалить все публичные ключи пользователя",
         "enabled": true,
         "type": "event",
         "command": "npx -y github:askarahodov/xyops-freeipa-management-v2.1.0#main",
@@ -129,14 +129,6 @@
             "required": true
           },
           {
-            "id": "public_key",
-            "title": "Открытый SSH-ключ для удаления",
-            "type": "textarea",
-            "value": "",
-            "required": true,
-            "caption": "Удаляется ключ с совпадающими типом и base64-частью. Комментарий ключа может отличаться."
-          },
-          {
             "id": "connect_timeout_seconds",
             "title": "Тайм-аут подключения",
             "type": "text",
@@ -159,7 +151,7 @@
             "required": false
           }
         ],
-        "notes": "Подключается к хосту технической SSH-учёткой и удаляет только указанный ключ из authorized_keys локального пользователя. Пользователь, пароль, sudo и остальные ключи не изменяются.",
+        "notes": "Подключается к хосту технической SSH-учёткой и удаляет файл authorized_keys локального пользователя. Локальный пользователь, пароль, домашний каталог и sudo не изменяются.",
         "icon": "key-remove",
         "uid": "",
         "gid": "",
