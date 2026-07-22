@@ -14,14 +14,13 @@ const workflowConfig = JSON.parse(fs.readFileSync(
   'utf8'
 ));
 
-test('SSH import contains only the local-user plugin', () => {
-  assert.equal(pluginConfig.items.length, 1);
-  assert.equal(pluginConfig.items[0].type, 'plugin');
-  assert.equal(pluginConfig.items[0].data.id, 'pmlc2ha8fssh_user');
-  assert.equal(
-    pluginConfig.items[0].data.title,
-    'SSH — Создать локального пользователя'
+test('SSH import contains the local-user creation plugin', () => {
+  const plugin = pluginConfig.items.find(
+    (item) => item.type === 'plugin' && item.data.id === 'pmlc2ha8fssh_user'
   );
+
+  assert.ok(plugin);
+  assert.equal(plugin.data.title, 'SSH — Создать локального пользователя');
 });
 
 test('workflow creates FreeIPA user before SSH users', () => {

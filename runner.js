@@ -60,7 +60,9 @@ function getAction(input) {
 }
 
 function selectEntrypoint(input) {
-  return getAction(input).startsWith('ssh_') ? 'ssh.js' : 'index.js';
+  const action = getAction(input);
+  if (action === 'ssh_remove_user_key') return 'ssh-remove-key.js';
+  return action.startsWith('ssh_') ? 'ssh.js' : 'index.js';
 }
 
 async function readInput() {
